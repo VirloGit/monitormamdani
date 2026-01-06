@@ -3,7 +3,7 @@
 // Uses a hardcoded Comet ID - does NOT create new ones
 
 // Hardcoded Comet ID from Supabase
-const MAMDANI_COMET_ID = '266339e6-4615-4893-bc44-274f5d3e6fe8';
+const MAMDANI_COMET_ID = '7b9504a5-f299-40d2-a03e-b9fe5b465c2b';
 
 export async function handler(event, context) {
     if (event.httpMethod !== 'GET' && event.httpMethod !== 'POST') {

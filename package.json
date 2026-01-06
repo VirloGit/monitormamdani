@@ -1,6 +1,7 @@
 {
   "name": "monitormamdani",
   "version": "1.0.0",
+  "type": "module",
   "description": "90s Bloomberg terminal-style live feed for Virlo.ai trends",
   "main": "index.html",
   "scripts": {

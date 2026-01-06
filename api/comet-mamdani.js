@@ -1,6 +1,9 @@
 // Netlify Serverless Function for Virlo Comet - Monitor Zohran Mamdani
 // Endpoint: GET /api/comet-mamdani
-// IMPORTANT: Uses an existing Comet configuration - does NOT create new ones
+// Uses a hardcoded Comet ID - does NOT create new ones
+
+// Hardcoded Comet ID from Supabase
+const MAMDANI_COMET_ID = 'b7f620c6-e16c-4957-b2ef-5a2604ad4f0e';
 
 export async function handler(event, context) {
     if (event.httpMethod !== 'GET' && event.httpMethod !== 'POST') {
@@ -24,21 +27,8 @@ export async function handler(event, context) {
     }
 
     try {
-        // Step 1: Find the existing Mamdani Comet (do NOT create new ones)
-        const cometId = await findExistingComet(VIRLO_API_KEY);
-
-        if (!cometId) {
-            // No comet found - return empty but don't error
-            return {
-                statusCode: 200,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    updatedAt: new Date().toISOString(),
-                    items: [],
-                    debug: { message: 'No Mamdani Comet found. Please create one manually via Virlo dashboard.' }
-                })
-            };
-        }
+        // Use the hardcoded Comet ID directly
+        const cometId = MAMDANI_COMET_ID;
 
         // Step 2: Fetch videos from the Comet configuration
         console.log('Fetching videos for Comet ID:', cometId);
@@ -111,51 +101,6 @@ export async function handler(event, context) {
                 items: []
             })
         };
-    }
-}
-
-// Find existing Mamdani Comet - does NOT create new ones
-async function findExistingComet(apiKey) {
-    try {
-        console.log('Listing existing comets...');
-        const listResponse = await fetch('https://api.virlo.ai/comet/list', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        console.log('List comets response status:', listResponse.status);
-
-        if (!listResponse.ok) {
-            const errorText = await listResponse.text();
-            console.log('List comets failed:', listResponse.status, errorText);
-            return null;
-        }
-
-        const comets = await listResponse.json();
-        console.log('Comets response:', JSON.stringify(comets).substring(0, 1000));
-
-        const cometArray = comets.data || comets || [];
-
-        // Find ANY Mamdani-related comet (use the first one found)
-        const existingComet = cometArray.find(c =>
-            c.name?.toLowerCase().includes('mamdani') ||
-            c.name?.toLowerCase().includes('monitor')
-        );
-
-        if (existingComet && existingComet.id) {
-            console.log('Found existing Comet:', existingComet.id, existingComet.name);
-            return existingComet.id;
-        }
-
-        console.log('No Mamdani Comet found in', cometArray.length, 'comets');
-        return null;
-
-    } catch (e) {
-        console.error('Error listing comets:', e.message);
-        return null;
     }
 }
 

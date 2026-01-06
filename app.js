@@ -7,6 +7,12 @@ const MAX_ITEMS = 50;
 let pollTimer = null;
 let isFirstLoad = true;
 
+// Store fetched data for ticker
+let tickerData = {
+    news: [],
+    markets: []
+};
+
 // DOM Elements
 const promisesContainer = document.getElementById('promisesContainer');
 const newsContainer = document.getElementById('newsContainer');
@@ -14,6 +20,7 @@ const trendsContainer = document.getElementById('trendsContainer');
 const videosContainer = document.getElementById('videosContainer');
 const marketsContainer = document.getElementById('marketsContainer');
 const statusText = document.getElementById('statusText');
+const tickerTrack = document.getElementById('tickerTrack');
 
 // Initialize the app
 function init() {
@@ -224,6 +231,10 @@ function renderNews(data) {
 
     const items = data.items || [];
 
+    // Store for ticker
+    tickerData.news = items.slice(0, 5).map(item => item.title).filter(Boolean);
+    updateTicker();
+
     if (items.length === 0) {
         const debugMsg = data.debug || data.error || '';
         newsContainer.innerHTML = `
@@ -353,6 +364,16 @@ function renderMarkets(data) {
 
     const markets = data.markets || [];
 
+    // Store for ticker
+    tickerData.markets = markets.slice(0, 5).map(m => {
+        const yesP = m.yesPrice !== null ? Math.round(m.yesPrice * 100) : null;
+        return {
+            title: m.title,
+            yes: yesP
+        };
+    }).filter(m => m.title && m.yes !== null);
+    updateTicker();
+
     if (markets.length === 0) {
         marketsContainer.innerHTML = `
             <div class="feed-empty" style="padding: 30px 15px;">
@@ -445,6 +466,46 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Update ticker with dynamic content
+function updateTicker() {
+    if (!tickerTrack) return;
+
+    const items = [];
+
+    // Build alternating pattern: MONITOR MAMDANI, news, MONITOR MAMDANI, market, repeat
+    const newsItems = tickerData.news || [];
+    const marketItems = tickerData.markets || [];
+
+    // Get random items
+    const getRandomNews = () => newsItems.length > 0 ? newsItems[Math.floor(Math.random() * newsItems.length)] : null;
+    const getRandomMarket = () => marketItems.length > 0 ? marketItems[Math.floor(Math.random() * marketItems.length)] : null;
+
+    // Build ticker items (need enough for seamless scroll)
+    for (let i = 0; i < 8; i++) {
+        items.push('MONITOR MAMDANI');
+
+        const news = getRandomNews();
+        if (news) {
+            items.push(`📰 ${truncate(news, 60)}`);
+        }
+
+        items.push('MONITOR MAMDANI');
+
+        const market = getRandomMarket();
+        if (market) {
+            items.push(`📊 ${truncate(market.title, 50)} — ${market.yes}% YES`);
+        }
+    }
+
+    // If no data yet, fall back to just MONITOR MAMDANI
+    if (newsItems.length === 0 && marketItems.length === 0) {
+        tickerTrack.innerHTML = Array(6).fill('<span>MONITOR MAMDANI</span>').join('');
+        return;
+    }
+
+    tickerTrack.innerHTML = items.map(item => `<span>${escapeHtml(item)}</span>`).join('');
 }
 
 // Term Countdown - Jan 1, 2026 to Jan 1, 2030 (4-year mayoral term)

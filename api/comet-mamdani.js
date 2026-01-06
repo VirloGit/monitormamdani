@@ -30,14 +30,11 @@ export async function handler(event, context) {
         // Use the hardcoded Comet ID directly
         const cometId = MAMDANI_COMET_ID;
 
-        // Try multiple endpoint variations
+        // Try the correct endpoint per docs: GET /comet/:id/videos
         const endpointVariations = [
             `https://api.virlo.ai/comet/${cometId}/videos`,
-            `https://api.virlo.ai/comet/${cometId}`,
-            `https://api.virlo.ai/custom-niche/${cometId}/videos`,
-            `https://api.virlo.ai/custom-niche/${cometId}`,
-            `https://api.virlo.ai/niche/${cometId}/videos`,
-            `https://api.virlo.ai/niche/${cometId}`
+            `https://api.virlo.ai/comet/${cometId}/videos?limit=50`,
+            `https://api.virlo.ai/comet/${cometId}`
         ];
 
         let videosData = null;
@@ -58,10 +55,23 @@ export async function handler(event, context) {
                 console.log(`${url} returned status:`, response.status);
 
                 if (response.ok) {
-                    videosData = await response.json();
-                    successUrl = url;
-                    console.log('Success! Data keys:', Object.keys(videosData));
-                    break;
+                    const data = await response.json();
+                    // Check if this response has videos data (not just config)
+                    const hasVideos = Array.isArray(data) ||
+                                     data.videos ||
+                                     data.data ||
+                                     data.items ||
+                                     (data.id && url.includes('/videos')); // Videos endpoint returned empty array
+
+                    if (hasVideos || url.includes('/videos')) {
+                        videosData = data;
+                        successUrl = url;
+                        console.log('Success! Data keys:', Object.keys(data));
+                        break;
+                    } else {
+                        // This is just the config, keep trying
+                        console.log(`${url} returned config, not videos`);
+                    }
                 } else {
                     const errorText = await response.text();
                     lastError = { url, status: response.status, error: errorText.substring(0, 200) };

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MONITOR MAMDANI | LIVE TERMINAL</title>
+    <link rel="icon" type="image/jpeg" href="assets/Mamdani-min.jpg">
+    <link rel="apple-touch-icon" href="assets/Mamdani-min.jpg">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -29,9 +31,12 @@
                 <!-- Hero section -->
                 <div class="hero">
                     <div class="hero-top">
-                        <div>
-                            <h1 class="h1">Monitor Mamdani</h1>
-                            <p class="subline">Monitoring Zohran Mamdani</p>
+                        <div class="hero-title">
+                            <img src="assets/Mamdani-min.jpg" alt="Monitor Mamdani" class="hero-logo">
+                            <div>
+                                <h1 class="h1">Monitor Mamdani</h1>
+                                <p class="subline">Monitoring Zohran Mamdani</p>
+                            </div>
                         </div>
                         <!-- Term Countdown -->
                         <div class="term-countdown" id="termCountdown">
@@ -75,6 +80,21 @@
                     </div>
                 </div>
 
+                <!-- Videos Panel -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <h2>Mamdani Videos</h2>
+                        <span class="meta">Virlo Comet | Auto-refresh: 60s</span>
+                    </div>
+
+                    <div class="feed" id="videosContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING VIDEOS...</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- News Panel (Firecrawl) -->
                 <div class="panel">
                     <div class="panel-title">
@@ -101,21 +121,6 @@
                         <div class="loading-state">
                             <div class="loading-spinner"></div>
                             <p>LOADING TRENDS...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Videos Panel -->
-                <div class="panel">
-                    <div class="panel-title">
-                        <h2>Mamdani Videos</h2>
-                        <span class="meta">Virlo Comet | Auto-refresh: 60s</span>
-                    </div>
-
-                    <div class="feed" id="videosContainer">
-                        <div class="loading-state">
-                            <div class="loading-spinner"></div>
-                            <p>LOADING VIDEOS...</p>
                         </div>
                     </div>
                 </div>

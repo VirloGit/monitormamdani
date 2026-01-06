@@ -347,7 +347,7 @@ function renderVideos(data) {
     videosContainer.innerHTML = header + rows;
 }
 
-// Render prediction markets
+// Render prediction markets in sidebar format
 function renderMarkets(data) {
     if (!marketsContainer) return;
 
@@ -355,53 +355,40 @@ function renderMarkets(data) {
 
     if (markets.length === 0) {
         marketsContainer.innerHTML = `
-            <div class="feed-empty">
+            <div class="feed-empty" style="padding: 30px 15px;">
                 <p>NO MARKETS FOUND</p>
-                <p>No Mamdani-related prediction markets active</p>
             </div>
         `;
         return;
     }
 
-    const cards = markets.map(event => {
-        // Extract outcomes from nested markets structure
-        let outcomesHtml = '';
-        const subMarkets = event.markets || [];
-
-        if (subMarkets.length > 0) {
-            // Show outcomes from the first market (usually the main one)
-            const mainMarket = subMarkets[0];
-            const outcomes = mainMarket.outcomes || [];
-            const prices = mainMarket.outcomePrices ? JSON.parse(mainMarket.outcomePrices) : [];
-
-            outcomesHtml = outcomes.slice(0, 4).map((outcome, idx) => {
-                const price = prices[idx] || 0;
-                const priceNum = parseFloat(price);
-                return `
-                    <div class="outcome-row">
-                        <span class="outcome-name">${escapeHtml(truncate(outcome, 30))}</span>
-                        <span class="outcome-price ${priceNum >= 0.5 ? 'high' : 'low'}">${formatPercent(priceNum)}</span>
-                    </div>
-                `;
-            }).join('');
-        }
+    const items = markets.map(market => {
+        const yesPercent = market.yesPrice !== null ? Math.round(market.yesPrice * 100) : null;
+        const noPercent = market.noPrice !== null ? Math.round(market.noPrice * 100) : null;
 
         return `
-            <div class="market-card">
-                <div class="market-header">
-                    <h3 class="market-title">${escapeHtml(truncate(event.title, 80))}</h3>
-                    ${event.volume ? `<span class="market-volume">$${formatNumber(event.volume)}</span>` : ''}
+            <a href="${escapeHtml(market.url)}" target="_blank" rel="noopener" class="sidebar-market">
+                <div class="sidebar-market-title">${escapeHtml(market.title)}</div>
+                <div class="sidebar-market-odds">
+                    ${yesPercent !== null ? `
+                        <div class="sidebar-market-yes">
+                            <span class="label">Yes</span>
+                            <span class="price">${yesPercent}%</span>
+                        </div>
+                    ` : ''}
+                    ${noPercent !== null ? `
+                        <div class="sidebar-market-no">
+                            <span class="label">No</span>
+                            <span class="price">${noPercent}%</span>
+                        </div>
+                    ` : ''}
+                    ${market.volume ? `<span class="sidebar-market-volume">$${formatNumber(market.volume)} vol</span>` : ''}
                 </div>
-                ${outcomesHtml ? `<div class="market-outcomes">${outcomesHtml}</div>` : ''}
-                <div class="market-footer">
-                    ${event.endDate ? `<span class="market-end">Ends: ${formatDate(event.endDate)}</span>` : ''}
-                    ${event.url ? `<a href="${escapeHtml(event.url)}" target="_blank" rel="noopener" class="market-link">Trade ↗</a>` : ''}
-                </div>
-            </div>
+            </a>
         `;
     }).join('');
 
-    marketsContainer.innerHTML = cards;
+    marketsContainer.innerHTML = items;
 }
 
 // Format percentage (0-1 to %)

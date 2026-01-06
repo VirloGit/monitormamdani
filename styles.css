@@ -74,10 +74,133 @@ body::after{
 }
 
 /* Layout */
+.page-layout{
+  display: flex;
+  min-height: calc(100vh - 50px);
+}
+
+.main-content{
+  flex: 1;
+  min-width: 0;
+}
+
 .container{
   max-width: 1560px;          /* 1040px * 1.5 */
   margin: 0 auto;
   padding: 18px 18px 60px;    /* 12px * 1.5, 40px * 1.5 */
+}
+
+/* Right Sidebar - Markets */
+.markets-sidebar{
+  width: 340px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-left: 1px solid var(--line-2);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 50px;
+  height: calc(100vh - 50px);
+  overflow: hidden;
+}
+
+.sidebar-header{
+  padding: 15px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel-2);
+}
+
+.sidebar-header h2{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--info);
+}
+
+.sidebar-source{
+  font-size: 11px;
+  color: var(--amber);
+  text-decoration: none;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  transition: all 0.2s;
+}
+
+.sidebar-source:hover{
+  border-color: var(--amber);
+  background: rgba(255,176,0,0.1);
+}
+
+.sidebar-markets{
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Sidebar Market Items */
+.sidebar-market{
+  display: block;
+  padding: 14px 15px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.sidebar-market:hover{
+  background: rgba(255,255,255,0.03);
+}
+
+.sidebar-market-title{
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.sidebar-market-odds{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-market-yes,
+.sidebar-market-no{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+
+.sidebar-market-yes .label,
+.sidebar-market-no .label{
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-market-yes .price{
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--up);
+}
+
+.sidebar-market-no .price{
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--down);
+}
+
+.sidebar-market-volume{
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
 }
 
 /* Top ticker bar */
@@ -821,6 +944,32 @@ body::after{
   font-size: 14px;
 }
 
+@media (max-width: 1200px){
+  .markets-sidebar{
+    width: 300px;
+  }
+}
+
+@media (max-width: 1024px){
+  .page-layout{
+    flex-direction: column;
+  }
+
+  .markets-sidebar{
+    width: 100%;
+    position: relative;
+    top: 0;
+    height: auto;
+    max-height: none;
+    border-left: none;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .sidebar-markets{
+    max-height: 400px;
+  }
+}
+
 @media (max-width: 768px){
   .markets-grid{
     grid-template-columns: 1fr;
@@ -828,5 +977,9 @@ body::after{
 
   .data-sources{
     flex-wrap: wrap;
+  }
+
+  .sidebar-markets{
+    max-height: 350px;
   }
 }

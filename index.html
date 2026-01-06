@@ -21,125 +21,130 @@
         </div>
     </div>
 
-    <div class="container">
-        <!-- Hero section -->
-        <div class="hero">
-            <div class="hero-top">
-                <div>
-                    <h1 class="h1">Monitor Mamdani</h1>
-                    <p class="subline">Monitoring Zohran Mamdani</p>
-                </div>
-                <!-- Term Countdown -->
-                <div class="term-countdown" id="termCountdown">
-                    <div class="countdown-label">TIME REMAINING IN TERM</div>
-                    <div class="countdown-timer" id="countdownTimer">
-                        <span class="countdown-unit"><span id="countdownYears">0</span><small>Y</small></span>
-                        <span class="countdown-unit"><span id="countdownDays">0</span><small>D</small></span>
-                        <span class="countdown-unit"><span id="countdownHours">00</span><small>H</small></span>
-                        <span class="countdown-unit"><span id="countdownMinutes">00</span><small>M</small></span>
-                        <span class="countdown-unit"><span id="countdownSeconds">00</span><small>S</small></span>
+    <!-- Main layout with sidebar -->
+    <div class="page-layout">
+        <!-- Main content area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Hero section -->
+                <div class="hero">
+                    <div class="hero-top">
+                        <div>
+                            <h1 class="h1">Monitor Mamdani</h1>
+                            <p class="subline">Monitoring Zohran Mamdani</p>
+                        </div>
+                        <!-- Term Countdown -->
+                        <div class="term-countdown" id="termCountdown">
+                            <div class="countdown-label">TIME REMAINING IN TERM</div>
+                            <div class="countdown-timer" id="countdownTimer">
+                                <span class="countdown-unit"><span id="countdownYears">0</span><small>Y</small></span>
+                                <span class="countdown-unit"><span id="countdownDays">0</span><small>D</small></span>
+                                <span class="countdown-unit"><span id="countdownHours">00</span><small>H</small></span>
+                                <span class="countdown-unit"><span id="countdownMinutes">00</span><small>M</small></span>
+                                <span class="countdown-unit"><span id="countdownSeconds">00</span><small>S</small></span>
+                            </div>
+                            <div class="countdown-dates">Jan 1, 2026 - Jan 1, 2030</div>
+                        </div>
+                        <div class="status">
+                            <span class="live-dot"></span>
+                            <span id="statusText">CONNECTING...</span>
+                        </div>
                     </div>
-                    <div class="countdown-dates">Jan 1, 2026 - Jan 1, 2030</div>
-                </div>
-                <div class="status">
-                    <span class="live-dot"></span>
-                    <span id="statusText">CONNECTING...</span>
-                </div>
-            </div>
 
-            <!-- Top CTA -->
-            <div class="data-sources">
-                <span>Data from:</span>
-                <a href="https://virlo.ai" target="_blank">Virlo</a>
-                <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>
-                <a href="https://polymarket.com" target="_blank">Polymarket</a>
+                    <!-- Top CTA -->
+                    <div class="data-sources">
+                        <span>Data from:</span>
+                        <a href="https://virlo.ai" target="_blank">Virlo</a>
+                        <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>
+                        <a href="https://polymarket.com" target="_blank">Polymarket</a>
+                    </div>
+                </div>
+
+                <!-- Campaign Promises Panel -->
+                <div class="panel promises-panel">
+                    <div class="panel-title">
+                        <h2>Campaign Platform</h2>
+                        <span class="meta"><a href="https://www.zohranfornyc.com/platform" target="_blank">zohranfornyc.com/platform</a></span>
+                    </div>
+
+                    <div class="promises-grid" id="promisesContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING PLATFORM...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Panel (Firecrawl) -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <h2>Latest News</h2>
+                        <span class="meta">Firecrawl Search</span>
+                    </div>
+
+                    <div class="feed" id="newsContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING NEWS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trends Panel -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <h2>Trending Topics</h2>
+                        <span class="meta">Virlo Trends Digest</span>
+                    </div>
+
+                    <div class="feed" id="trendsContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING TRENDS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Videos Panel -->
+                <div class="panel">
+                    <div class="panel-title">
+                        <h2>Mamdani Videos</h2>
+                        <span class="meta">Virlo Comet | Auto-refresh: 60s</span>
+                    </div>
+
+                    <div class="feed" id="videosContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING VIDEOS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer CTA -->
+                <div class="footer">
+                    <span class="smallprint">
+                        © 2026 Monitor Mamdani. Built with data from
+                        <a href="https://virlo.ai" target="_blank">Virlo</a>,
+                        <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>, and
+                        <a href="https://polymarket.com" target="_blank">Polymarket</a>
+                    </span>
+                </div>
             </div>
         </div>
 
-        <!-- Campaign Promises Panel -->
-        <div class="panel promises-panel">
-            <div class="panel-title">
-                <h2>Campaign Platform</h2>
-                <span class="meta"><a href="https://www.zohranfornyc.com/platform" target="_blank">zohranfornyc.com/platform</a></span>
-            </div>
-
-            <div class="promises-grid" id="promisesContainer">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <p>LOADING PLATFORM...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- News Panel (Firecrawl) -->
-        <div class="panel">
-            <div class="panel-title">
-                <h2>Latest News</h2>
-                <span class="meta">Firecrawl Search</span>
-            </div>
-
-            <div class="feed" id="newsContainer">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <p>LOADING NEWS...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Trends Panel -->
-        <div class="panel">
-            <div class="panel-title">
-                <h2>Trending Topics</h2>
-                <span class="meta">Virlo Trends Digest</span>
-            </div>
-
-            <div class="feed" id="trendsContainer">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <p>LOADING TRENDS...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Videos Panel -->
-        <div class="panel">
-            <div class="panel-title">
-                <h2>Mamdani Videos</h2>
-                <span class="meta">Virlo Comet | Auto-refresh: 60s</span>
-            </div>
-
-            <div class="feed" id="videosContainer">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <p>LOADING VIDEOS...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Polymarket Prediction Markets Panel -->
-        <div class="panel polymarket-panel">
-            <div class="panel-title">
+        <!-- Right Sidebar - Polymarket -->
+        <aside class="markets-sidebar" id="marketsSidebar">
+            <div class="sidebar-header">
                 <h2>Prediction Markets</h2>
-                <span class="meta"><a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a></span>
+                <a href="https://polymarket.com" target="_blank" rel="noopener" class="sidebar-source">Polymarket</a>
             </div>
-
-            <div class="markets-grid" id="marketsContainer">
+            <div class="sidebar-markets" id="marketsContainer">
                 <div class="loading-state">
                     <div class="loading-spinner"></div>
-                    <p>LOADING MARKETS...</p>
+                    <p>LOADING...</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Footer CTA -->
-        <div class="footer">
-            <span class="smallprint">
-                © 2026 Monitor Mamdani. Built with data from
-                <a href="https://virlo.ai" target="_blank">Virlo</a>,
-                <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>, and
-                <a href="https://polymarket.com" target="_blank">Polymarket</a>
-            </span>
-        </div>
+        </aside>
     </div>
 
     <script src="app.js"></script>

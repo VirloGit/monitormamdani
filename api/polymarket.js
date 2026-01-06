@@ -1,6 +1,17 @@
 // Netlify Serverless Function for Polymarket Markets - Zohran Mamdani
 // Endpoint: GET /api/polymarket
-// Fetches prediction markets related to Mamdani from Polymarket's Gamma API
+// Fetches specific Mamdani prediction markets from Polymarket's Gamma API
+
+// Known Mamdani market slugs
+const MAMDANI_MARKET_SLUGS = [
+    'will-mamdani-freeze-nyc-rents-before-2027',
+    'mamdani-opens-city-owned-grocery-store-by-june-30',
+    'will-mamdani-make-nyc-buses-free-by-march-31',
+    'zohran-mamdani-out-as-mayor-of-nyc-before-2027',
+    'will-mamdani-pass-the-2-millionaire-tax-before-2027',
+    'zohran-mamdani-citizenship-revoked-before-2027',
+    'will-mamdani-raise-the-minimum-wage-to-30-before-2027'
+];
 
 export async function handler(event, context) {
     if (event.httpMethod !== 'GET') {
@@ -13,15 +24,13 @@ export async function handler(event, context) {
     const GAMMA_API_BASE = 'https://gamma-api.polymarket.com';
 
     try {
-        // Search for Mamdani-related markets
-        const searchTerms = ['mamdani', 'zohran', 'nyc mayor 2025'];
-        let allMarkets = [];
+        const allMarkets = [];
 
-        for (const term of searchTerms) {
+        // Fetch each known Mamdani market by slug
+        for (const slug of MAMDANI_MARKET_SLUGS) {
             try {
-                // Try the events endpoint with text search
                 const response = await fetch(
-                    `${GAMMA_API_BASE}/events?closed=false&limit=20`,
+                    `${GAMMA_API_BASE}/events?slug=${slug}`,
                     {
                         method: 'GET',
                         headers: {
@@ -32,27 +41,19 @@ export async function handler(event, context) {
 
                 if (response.ok) {
                     const events = await response.json();
-                    // Filter events that contain our search terms
-                    const filtered = events.filter(event => {
-                        const title = (event.title || '').toLowerCase();
-                        const description = (event.description || '').toLowerCase();
-                        const slug = (event.slug || '').toLowerCase();
-                        return title.includes(term) ||
-                               description.includes(term) ||
-                               slug.includes(term) ||
-                               title.includes('nyc') && title.includes('mayor');
-                    });
-                    allMarkets.push(...filtered);
+                    if (Array.isArray(events) && events.length > 0) {
+                        allMarkets.push(events[0]);
+                    }
                 }
             } catch (e) {
-                console.log(`Search for "${term}" failed:`, e.message);
+                console.log(`Failed to fetch ${slug}:`, e.message);
             }
         }
 
-        // Also try searching for NYC mayor markets specifically
+        // Also search for any other Mamdani markets we might have missed
         try {
             const response = await fetch(
-                `${GAMMA_API_BASE}/events?closed=false&limit=50`,
+                `${GAMMA_API_BASE}/events?closed=false&limit=100`,
                 {
                     method: 'GET',
                     headers: {
@@ -63,55 +64,66 @@ export async function handler(event, context) {
 
             if (response.ok) {
                 const events = await response.json();
-                // Filter for NYC mayor related markets
-                const nycMayorMarkets = events.filter(event => {
+                const mamdaniMarkets = events.filter(event => {
                     const title = (event.title || '').toLowerCase();
-                    const description = (event.description || '').toLowerCase();
-                    return (title.includes('nyc') || title.includes('new york')) &&
-                           (title.includes('mayor') || description.includes('mayor'));
+                    const slug = (event.slug || '').toLowerCase();
+                    return title.includes('mamdani') || slug.includes('mamdani');
                 });
-                allMarkets.push(...nycMayorMarkets);
+
+                // Add any we don't already have
+                for (const market of mamdaniMarkets) {
+                    if (!allMarkets.find(m => m.id === market.id)) {
+                        allMarkets.push(market);
+                    }
+                }
             }
         } catch (e) {
-            console.log('NYC mayor search failed:', e.message);
-        }
-
-        // Deduplicate by ID
-        const uniqueMarkets = [];
-        const seenIds = new Set();
-        for (const market of allMarkets) {
-            if (market.id && !seenIds.has(market.id)) {
-                seenIds.add(market.id);
-                uniqueMarkets.push(market);
-            }
+            console.log('Search for additional markets failed:', e.message);
         }
 
         // Normalize the response
-        const normalizedMarkets = uniqueMarkets.map(event => ({
-            id: event.id,
-            title: event.title || 'Unknown Market',
-            slug: event.slug,
-            description: truncate(event.description || '', 150),
-            image: event.image,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            volume: event.volume || 0,
-            liquidity: event.liquidity || 0,
-            markets: (event.markets || []).map(m => ({
-                id: m.id,
-                question: m.question,
-                outcomePrices: m.outcomePrices,
-                outcomes: m.outcomes,
-                volume: m.volume
-            })),
-            url: `https://polymarket.com/event/${event.slug}`
-        }));
+        const normalizedMarkets = allMarkets.map(event => {
+            // Get the main market's outcome prices
+            const mainMarket = event.markets && event.markets[0];
+            let yesPrice = null;
+            let noPrice = null;
+
+            if (mainMarket && mainMarket.outcomePrices) {
+                try {
+                    const prices = JSON.parse(mainMarket.outcomePrices);
+                    yesPrice = parseFloat(prices[0]) || null;
+                    noPrice = parseFloat(prices[1]) || null;
+                } catch (e) {
+                    // Prices might already be parsed or in different format
+                    if (Array.isArray(mainMarket.outcomePrices)) {
+                        yesPrice = parseFloat(mainMarket.outcomePrices[0]) || null;
+                        noPrice = parseFloat(mainMarket.outcomePrices[1]) || null;
+                    }
+                }
+            }
+
+            return {
+                id: event.id,
+                title: event.title || 'Unknown Market',
+                slug: event.slug,
+                yesPrice: yesPrice,
+                noPrice: noPrice,
+                volume: event.volume || (mainMarket && mainMarket.volume) || 0,
+                liquidity: event.liquidity || 0,
+                endDate: event.endDate,
+                active: event.active !== false,
+                url: `https://polymarket.com/event/${event.slug}`
+            };
+        });
+
+        // Sort by volume (most traded first)
+        normalizedMarkets.sort((a, b) => (b.volume || 0) - (a.volume || 0));
 
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 's-maxage=300, stale-while-revalidate' // Cache 5 minutes
+                'Cache-Control': 's-maxage=120, stale-while-revalidate' // Cache 2 minutes
             },
             body: JSON.stringify({
                 updatedAt: new Date().toISOString(),
@@ -134,11 +146,4 @@ export async function handler(event, context) {
             })
         };
     }
-}
-
-// Truncate text
-function truncate(text, maxLength) {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength - 3) + '...';
 }

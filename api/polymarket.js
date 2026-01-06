@@ -25,12 +25,13 @@ export async function handler(event, context) {
 
     try {
         const allMarkets = [];
+        const errors = [];
 
-        // Fetch each known Mamdani market by slug
+        // Fetch each known Mamdani market by slug using correct endpoint: /events/slug/{slug}
         for (const slug of MAMDANI_MARKET_SLUGS) {
             try {
                 const response = await fetch(
-                    `${GAMMA_API_BASE}/events?slug=${slug}`,
+                    `${GAMMA_API_BASE}/events/slug/${slug}`,
                     {
                         method: 'GET',
                         headers: {
@@ -40,20 +41,22 @@ export async function handler(event, context) {
                 );
 
                 if (response.ok) {
-                    const events = await response.json();
-                    if (Array.isArray(events) && events.length > 0) {
-                        allMarkets.push(events[0]);
+                    const event = await response.json();
+                    if (event && event.id) {
+                        allMarkets.push(event);
                     }
+                } else {
+                    errors.push({ slug, status: response.status });
                 }
             } catch (e) {
-                console.log(`Failed to fetch ${slug}:`, e.message);
+                errors.push({ slug, error: e.message });
             }
         }
 
         // Also search for any other Mamdani markets we might have missed
         try {
             const response = await fetch(
-                `${GAMMA_API_BASE}/events?closed=false&limit=100`,
+                `${GAMMA_API_BASE}/events?closed=false&limit=100&ascending=false`,
                 {
                     method: 'GET',
                     headers: {
@@ -64,16 +67,18 @@ export async function handler(event, context) {
 
             if (response.ok) {
                 const events = await response.json();
-                const mamdaniMarkets = events.filter(event => {
-                    const title = (event.title || '').toLowerCase();
-                    const slug = (event.slug || '').toLowerCase();
-                    return title.includes('mamdani') || slug.includes('mamdani');
-                });
+                if (Array.isArray(events)) {
+                    const mamdaniMarkets = events.filter(event => {
+                        const title = (event.title || '').toLowerCase();
+                        const slug = (event.slug || '').toLowerCase();
+                        return title.includes('mamdani') || slug.includes('mamdani');
+                    });
 
-                // Add any we don't already have
-                for (const market of mamdaniMarkets) {
-                    if (!allMarkets.find(m => m.id === market.id)) {
-                        allMarkets.push(market);
+                    // Add any we don't already have
+                    for (const market of mamdaniMarkets) {
+                        if (!allMarkets.find(m => m.id === market.id)) {
+                            allMarkets.push(market);
+                        }
                     }
                 }
             }
@@ -90,15 +95,15 @@ export async function handler(event, context) {
 
             if (mainMarket && mainMarket.outcomePrices) {
                 try {
-                    const prices = JSON.parse(mainMarket.outcomePrices);
-                    yesPrice = parseFloat(prices[0]) || null;
-                    noPrice = parseFloat(prices[1]) || null;
-                } catch (e) {
-                    // Prices might already be parsed or in different format
-                    if (Array.isArray(mainMarket.outcomePrices)) {
-                        yesPrice = parseFloat(mainMarket.outcomePrices[0]) || null;
-                        noPrice = parseFloat(mainMarket.outcomePrices[1]) || null;
+                    const prices = typeof mainMarket.outcomePrices === 'string'
+                        ? JSON.parse(mainMarket.outcomePrices)
+                        : mainMarket.outcomePrices;
+                    if (Array.isArray(prices)) {
+                        yesPrice = parseFloat(prices[0]) || null;
+                        noPrice = parseFloat(prices[1]) || null;
                     }
+                } catch (e) {
+                    console.log('Error parsing prices:', e.message);
                 }
             }
 
@@ -123,12 +128,17 @@ export async function handler(event, context) {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 's-maxage=120, stale-while-revalidate' // Cache 2 minutes
+                'Cache-Control': 's-maxage=120, stale-while-revalidate'
             },
             body: JSON.stringify({
                 updatedAt: new Date().toISOString(),
                 markets: normalizedMarkets,
-                count: normalizedMarkets.length
+                count: normalizedMarkets.length,
+                debug: {
+                    slugsFetched: MAMDANI_MARKET_SLUGS.length,
+                    marketsFound: normalizedMarkets.length,
+                    errors: errors.length > 0 ? errors : undefined
+                }
             })
         };
 

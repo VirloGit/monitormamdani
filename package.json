@@ -1,0 +1,24 @@
+{
+  "name": "monitormamdani",
+  "version": "1.0.0",
+  "description": "90s Bloomberg terminal-style live feed for Virlo.ai trends",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required - static site'",
+    "deploy": "vercel --prod",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": [
+    "terminal",
+    "bloomberg",
+    "trends",
+    "virlo",
+    "live-feed"
+  ],
+  "author": "Monitor Mamdani",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}

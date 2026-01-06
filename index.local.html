@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONITOR MAMDANI | LIVE TERMINAL (LOCAL TEST)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top ticker bar -->
+    <div class="ticker-bar">
+        <div class="ticker">
+            <div class="track">
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Hero section -->
+        <div class="hero">
+            <div class="hero-top">
+                <div>
+                    <h1 class="h1">Monitor Mamdani</h1>
+                    <p class="subline">Real-time trend analytics powered by Virlo.ai</p>
+                </div>
+                <div class="status">
+                    <span class="live-dot"></span>
+                    <span id="statusText">LOCAL TEST MODE</span>
+                </div>
+            </div>
+
+            <!-- Top CTA -->
+            <div style="margin: 14px 0;">
+                <a href="https://virlo.ai" target="_blank" class="cta">Data by Virlo.ai</a>
+            </div>
+
+            <!-- Hero Image -->
+            <img src="assets/images.png" alt="Monitor Mamdani" class="hero-image"
+                 onerror="this.style.display='none'; this.parentElement.insertAdjacentHTML('beforeend', '<p style=\'color:var(--warn);text-align:center;padding:30px;border:1px solid var(--line);\'>Add your image to: /assets/images.png</p>')">
+        </div>
+
+        <!-- Main feed panel -->
+        <div class="panel">
+            <div class="panel-title">
+                <h2>Virlo.ai Trend Feed</h2>
+                <span class="meta">Mock Data</span>
+            </div>
+
+            <div class="feed" id="feedContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING MOCK DATA...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div class="footer">
+            <a href="https://virlo.ai" target="_blank" class="cta">Data by Virlo.ai</a>
+            <span class="smallprint">© 2026 Monitor Mamdani. Powered by Virlo.ai</span>
+        </div>
+    </div>
+
+    <script>
+        // Local test version with mock data
+        const MOCK_DATA = {
+            "updatedAt": new Date().toISOString(),
+            "items": [
+                {
+                    "ts": new Date(Date.now() - 300000).toISOString(),
+                    "severity": "hot",
+                    "title": "AI Model Surpasses Human Performance in Complex Reasoning Tasks",
+                    "metric": "Score: 2.5M | Growth: +250%",
+                    "source": "Virlo.ai",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 900000).toISOString(),
+                    "severity": "spike",
+                    "title": "Tesla Unveils Revolutionary Battery Technology",
+                    "metric": "Score: 1.8M | Growth: +180%",
+                    "source": "Tech News",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 1800000).toISOString(),
+                    "severity": "new",
+                    "title": "Quantum Computing Breakthrough Announced at MIT",
+                    "metric": "Score: 890K | Growth: +120%",
+                    "source": "Science Daily",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 2400000).toISOString(),
+                    "severity": "trending",
+                    "title": "Climate Summit Reaches Historic Agreement",
+                    "metric": "Score: 650K | Growth: +45%",
+                    "source": "World News",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 3000000).toISOString(),
+                    "severity": "hot",
+                    "title": "SpaceX Successfully Completes Mars Landing Mission",
+                    "metric": "Score: 3.2M | Growth: +320%",
+                    "source": "Space News",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 3600000).toISOString(),
+                    "severity": "spike",
+                    "title": "Major Cybersecurity Vulnerability Discovered",
+                    "metric": "Score: 1.5M | Growth: +200%",
+                    "source": "Security Today",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 7200000).toISOString(),
+                    "severity": "new",
+                    "title": "New Social Media Platform Gains 10M Users in 24 Hours",
+                    "metric": "Score: 920K | Growth: +150%",
+                    "source": "Social Media News",
+                    "url": "https://virlo.ai"
+                },
+                {
+                    "ts": new Date(Date.now() - 10800000).toISOString(),
+                    "severity": "trending",
+                    "title": "Apple Announces Next-Generation AR Glasses",
+                    "metric": "Score: 780K | Growth: +65%",
+                    "source": "Tech Insider",
+                    "url": "https://virlo.ai"
+                }
+            ]
+        };
+
+        const MAX_ITEMS = 50;
+        const feedContainer = document.getElementById('feedContainer');
+        const statusText = document.getElementById('statusText');
+
+        function init() {
+            console.log('Monitor Mamdani (Local Test) initializing...');
+            setTimeout(() => {
+                renderFeed(MOCK_DATA.items, MOCK_DATA.updatedAt);
+            }, 500);
+        }
+
+        function renderFeed(items, updatedAt) {
+            const sortedItems = items.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+            const limitedItems = sortedItems.slice(0, MAX_ITEMS);
+
+            const header = `
+                <div class="feed-header">
+                    <div>TIME</div>
+                    <div>TYPE</div>
+                    <div>TREND</div>
+                    <div>METRIC</div>
+                    <div>SOURCE</div>
+                    <div></div>
+                </div>
+            `;
+
+            const rows = limitedItems.map(item => createFeedRow(item)).join('');
+            feedContainer.innerHTML = header + rows;
+        }
+
+        function createFeedRow(item) {
+            const severityClass = item.severity.toLowerCase();
+            const formattedTime = formatTimestamp(item.ts);
+            const title = escapeHtml(item.title || 'Untitled');
+            const metric = item.metric ? escapeHtml(item.metric) : 'N/A';
+            const source = item.source ? escapeHtml(item.source) : 'Unknown';
+            const url = item.url || '#';
+
+            return `
+                <div class="feed-row">
+                    <div class="timestamp">${formattedTime}</div>
+                    <div><span class="tag ${severityClass}">${item.severity.toUpperCase()}</span></div>
+                    <div class="title">${title}</div>
+                    <div class="metric neutral">${metric}</div>
+                    <div class="source">${source}</div>
+                    <div>
+                        ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener" class="icon-link" title="View source">↗</a>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatTimestamp(ts) {
+            try {
+                const date = new Date(ts);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+
+                if (diffMins < 1) return 'NOW';
+                if (diffMins < 60) return `${diffMins}m`;
+                if (diffHours < 24) return `${diffHours}h`;
+
+                const days = Math.floor(diffHours / 24);
+                return `${days}d`;
+            } catch (e) {
+                return '--';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "updatedAt": "2026-01-05T12:00:00Z",
+  "items": [
+    {
+      "ts": "2026-01-05T11:55:00Z",
+      "severity": "hot",
+      "title": "Breaking: AI Model Surpasses Human Performance in Complex Reasoning",
+      "metric": "Score: 2.5M | Growth: +250% | Mentions: 150K",
+      "source": "Virlo.ai",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T11:45:00Z",
+      "severity": "spike",
+      "title": "Tesla Unveils Revolutionary Battery Technology",
+      "metric": "Score: 1.8M | Growth: +180% | Volume: 95K",
+      "source": "Tech News",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T11:30:00Z",
+      "severity": "new",
+      "title": "Quantum Computing Breakthrough Announced at MIT",
+      "metric": "Score: 890K | Growth: +120% | Engagement: 45K",
+      "source": "Science Daily",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T11:20:00Z",
+      "severity": "trending",
+      "title": "Climate Summit Reaches Historic Agreement",
+      "metric": "Score: 650K | Growth: +45% | Mentions: 28K",
+      "source": "World News",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T11:10:00Z",
+      "severity": "hot",
+      "title": "SpaceX Successfully Lands on Mars",
+      "metric": "Score: 3.2M | Growth: +320% | Volume: 180K",
+      "source": "Space News",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T11:00:00Z",
+      "severity": "spike",
+      "title": "Major Cybersecurity Vulnerability Discovered",
+      "metric": "Score: 1.5M | Growth: +200% | Mentions: 85K",
+      "source": "Security Today",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T10:50:00Z",
+      "severity": "new",
+      "title": "New Social Media Platform Gains 10M Users in 24 Hours",
+      "metric": "Score: 920K | Growth: +150% | Engagement: 52K",
+      "source": "Social Media News",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T10:40:00Z",
+      "severity": "trending",
+      "title": "Apple Announces Next-Generation AR Glasses",
+      "metric": "Score: 780K | Growth: +65% | Volume: 38K",
+      "source": "Tech Insider",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T10:30:00Z",
+      "severity": "hot",
+      "title": "Cryptocurrency Market Surges to All-Time High",
+      "metric": "Score: 2.1M | Growth: +280% | Mentions: 125K",
+      "source": "Financial Times",
+      "url": "https://virlo.ai"
+    },
+    {
+      "ts": "2026-01-05T10:20:00Z",
+      "severity": "spike",
+      "title": "Netflix Unveils Interactive AI-Generated Content",
+      "metric": "Score: 1.3M | Growth: +175% | Engagement: 72K",
+      "source": "Entertainment Weekly",
+      "url": "https://virlo.ai"
+    }
+  ]
+}

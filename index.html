@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONITOR MAMDANI | LIVE TERMINAL</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top ticker bar -->
+    <div class="ticker-bar">
+        <div class="ticker">
+            <div class="track">
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Hero section -->
+        <div class="hero">
+            <div class="hero-top">
+                <div>
+                    <h1 class="h1">Monitor Mamdani</h1>
+                    <p class="subline">Monitoring Zohran Mamdani</p>
+                </div>
+                <!-- Term Countdown -->
+                <div class="term-countdown" id="termCountdown">
+                    <div class="countdown-label">TIME REMAINING IN TERM</div>
+                    <div class="countdown-timer" id="countdownTimer">
+                        <span class="countdown-unit"><span id="countdownYears">0</span><small>Y</small></span>
+                        <span class="countdown-unit"><span id="countdownDays">0</span><small>D</small></span>
+                        <span class="countdown-unit"><span id="countdownHours">00</span><small>H</small></span>
+                        <span class="countdown-unit"><span id="countdownMinutes">00</span><small>M</small></span>
+                        <span class="countdown-unit"><span id="countdownSeconds">00</span><small>S</small></span>
+                    </div>
+                    <div class="countdown-dates">Jan 1, 2026 - Jan 1, 2030</div>
+                </div>
+                <div class="status">
+                    <span class="live-dot"></span>
+                    <span id="statusText">CONNECTING...</span>
+                </div>
+            </div>
+
+            <!-- Top CTA -->
+            <div style="margin: 14px 0;">
+                <a href="https://virlo.ai" target="_blank" class="cta">Data by Virlo.ai</a>
+            </div>
+        </div>
+
+        <!-- Campaign Promises Panel -->
+        <div class="panel promises-panel">
+            <div class="panel-title">
+                <h2>Campaign Platform</h2>
+                <span class="meta"><a href="https://www.zohranfornyc.com/platform" target="_blank">zohranfornyc.com/platform</a></span>
+            </div>
+
+            <div class="promises-grid" id="promisesContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING PLATFORM...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- News Panel (Firecrawl) -->
+        <div class="panel">
+            <div class="panel-title">
+                <h2>Latest News</h2>
+                <span class="meta">Firecrawl Search</span>
+            </div>
+
+            <div class="feed" id="newsContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING NEWS...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trends Panel -->
+        <div class="panel">
+            <div class="panel-title">
+                <h2>Trending Topics</h2>
+                <span class="meta">Virlo Trends Digest</span>
+            </div>
+
+            <div class="feed" id="trendsContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING TRENDS...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos Panel -->
+        <div class="panel">
+            <div class="panel-title">
+                <h2>Mamdani Videos</h2>
+                <span class="meta">Virlo Comet | Auto-refresh: 60s</span>
+            </div>
+
+            <div class="feed" id="videosContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING VIDEOS...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div class="footer">
+            <a href="https://virlo.ai" target="_blank" class="cta">Data by Virlo.ai</a>
+            <span class="smallprint">© 2026 Monitor Mamdani. Powered by Virlo.ai + Firecrawl</span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

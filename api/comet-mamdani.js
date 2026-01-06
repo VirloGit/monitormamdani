@@ -30,25 +30,51 @@ export async function handler(event, context) {
         // Use the hardcoded Comet ID directly
         const cometId = MAMDANI_COMET_ID;
 
-        // Step 2: Fetch videos from the Comet configuration
-        console.log('Fetching videos for Comet ID:', cometId);
-        const videosUrl = `https://api.virlo.ai/comet/${cometId}/videos?limit=50&orderBy=views&orderDirection=desc`;
+        // Try multiple endpoint variations
+        const endpointVariations = [
+            `https://api.virlo.ai/comet/${cometId}/videos`,
+            `https://api.virlo.ai/comet/${cometId}`,
+            `https://api.virlo.ai/custom-niche/${cometId}/videos`,
+            `https://api.virlo.ai/custom-niche/${cometId}`,
+            `https://api.virlo.ai/niche/${cometId}/videos`,
+            `https://api.virlo.ai/niche/${cometId}`
+        ];
 
-        const videosResponse = await fetch(videosUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${VIRLO_API_KEY}`,
-                'Content-Type': 'application/json'
+        let videosData = null;
+        let successUrl = null;
+        let lastError = null;
+
+        for (const url of endpointVariations) {
+            console.log('Trying endpoint:', url);
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${VIRLO_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log(`${url} returned status:`, response.status);
+
+                if (response.ok) {
+                    videosData = await response.json();
+                    successUrl = url;
+                    console.log('Success! Data keys:', Object.keys(videosData));
+                    break;
+                } else {
+                    const errorText = await response.text();
+                    lastError = { url, status: response.status, error: errorText.substring(0, 200) };
+                    console.log(`${url} failed:`, response.status, errorText.substring(0, 200));
+                }
+            } catch (e) {
+                lastError = { url, error: e.message };
+                console.log(`${url} threw error:`, e.message);
             }
-        });
+        }
 
-        console.log('Videos response status:', videosResponse.status);
-
-        if (!videosResponse.ok) {
-            const errorText = await videosResponse.text();
-            console.error(`Virlo Comet videos error: ${videosResponse.status}`, errorText);
-
-            // Return empty items instead of erroring
+        if (!videosData) {
+            // None of the endpoints worked
             return {
                 statusCode: 200,
                 headers: { 'Content-Type': 'application/json' },
@@ -57,14 +83,14 @@ export async function handler(event, context) {
                     items: [],
                     debug: {
                         cometId,
-                        error: `Videos API returned ${videosResponse.status}`,
-                        message: 'Comet may still be collecting videos'
+                        triedEndpoints: endpointVariations.length,
+                        lastError,
+                        message: 'No working endpoint found for Comet videos'
                     }
                 })
             };
         }
 
-        const videosData = await videosResponse.json();
         console.log('Videos data keys:', Object.keys(videosData));
         console.log('Videos data sample:', JSON.stringify(videosData).substring(0, 500));
 
@@ -74,6 +100,7 @@ export async function handler(event, context) {
         // Add debug info
         normalizedData.debug = {
             cometId: cometId,
+            successUrl: successUrl,
             rawDataKeys: Object.keys(videosData),
             rawDataLength: Array.isArray(videosData) ? videosData.length :
                           (videosData.data?.length || videosData.videos?.length || videosData.items?.length || 0)

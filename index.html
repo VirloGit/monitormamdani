@@ -48,8 +48,11 @@
             </div>
 
             <!-- Top CTA -->
-            <div style="margin: 14px 0;">
-                <a href="https://virlo.ai" target="_blank" class="cta">Data by Virlo.ai</a>
+            <div class="data-sources">
+                <span>Data from:</span>
+                <a href="https://virlo.ai" target="_blank">Virlo</a>
+                <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>
+                <a href="https://polymarket.com" target="_blank">Polymarket</a>
             </div>
         </div>
 
@@ -113,10 +116,29 @@
             </div>
         </div>
 
+        <!-- Polymarket Prediction Markets Panel -->
+        <div class="panel polymarket-panel">
+            <div class="panel-title">
+                <h2>Prediction Markets</h2>
+                <span class="meta"><a href="https://polymarket.com" target="_blank" rel="noopener">Polymarket</a></span>
+            </div>
+
+            <div class="markets-grid" id="marketsContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING MARKETS...</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer CTA -->
         <div class="footer">
-            <a href="https://virlo.ai" target="_blank" class="cta">Data by Virlo.ai</a>
-            <span class="smallprint">© 2026 Monitor Mamdani. Powered by Virlo.ai + Firecrawl</span>
+            <span class="smallprint">
+                © 2026 Monitor Mamdani. Built with data from
+                <a href="https://virlo.ai" target="_blank">Virlo</a>,
+                <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>, and
+                <a href="https://polymarket.com" target="_blank">Polymarket</a>
+            </span>
         </div>
     </div>
 

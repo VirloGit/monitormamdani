@@ -12,6 +12,7 @@ const promisesContainer = document.getElementById('promisesContainer');
 const newsContainer = document.getElementById('newsContainer');
 const trendsContainer = document.getElementById('trendsContainer');
 const videosContainer = document.getElementById('videosContainer');
+const marketsContainer = document.getElementById('marketsContainer');
 const statusText = document.getElementById('statusText');
 
 // Initialize the app
@@ -38,15 +39,16 @@ async function fetchAllData() {
 
     try {
         // Fetch all endpoints in parallel
-        const [promisesResult, newsResult, trendsResult, videosResult] = await Promise.allSettled([
+        const [promisesResult, newsResult, trendsResult, videosResult, marketsResult] = await Promise.allSettled([
             fetchPromises(),
             fetchNews(),
             fetchTrends(),
-            fetchVideos()
+            fetchVideos(),
+            fetchMarkets()
         ]);
 
         // Check if at least some succeeded
-        const anySuccess = [promisesResult, newsResult, trendsResult, videosResult]
+        const anySuccess = [promisesResult, newsResult, trendsResult, videosResult, marketsResult]
             .some(r => r.status === 'fulfilled');
 
         if (anySuccess) {
@@ -149,6 +151,28 @@ async function fetchVideos() {
         console.error('Error fetching videos:', error);
         if (videosContainer && isFirstLoad) {
             videosContainer.innerHTML = `<div class="feed-empty"><p>Videos unavailable</p></div>`;
+        }
+        throw error;
+    }
+}
+
+// Fetch prediction markets from /api/polymarket
+async function fetchMarkets() {
+    try {
+        const response = await fetch('/api/polymarket');
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderMarkets(data);
+        return data;
+
+    } catch (error) {
+        console.error('Error fetching markets:', error);
+        if (marketsContainer && isFirstLoad) {
+            marketsContainer.innerHTML = `<div class="feed-empty"><p>Markets unavailable</p></div>`;
         }
         throw error;
     }
@@ -321,6 +345,79 @@ function renderVideos(data) {
     }).join('');
 
     videosContainer.innerHTML = header + rows;
+}
+
+// Render prediction markets
+function renderMarkets(data) {
+    if (!marketsContainer) return;
+
+    const markets = data.markets || [];
+
+    if (markets.length === 0) {
+        marketsContainer.innerHTML = `
+            <div class="feed-empty">
+                <p>NO MARKETS FOUND</p>
+                <p>No Mamdani-related prediction markets active</p>
+            </div>
+        `;
+        return;
+    }
+
+    const cards = markets.map(event => {
+        // Extract outcomes from nested markets structure
+        let outcomesHtml = '';
+        const subMarkets = event.markets || [];
+
+        if (subMarkets.length > 0) {
+            // Show outcomes from the first market (usually the main one)
+            const mainMarket = subMarkets[0];
+            const outcomes = mainMarket.outcomes || [];
+            const prices = mainMarket.outcomePrices ? JSON.parse(mainMarket.outcomePrices) : [];
+
+            outcomesHtml = outcomes.slice(0, 4).map((outcome, idx) => {
+                const price = prices[idx] || 0;
+                const priceNum = parseFloat(price);
+                return `
+                    <div class="outcome-row">
+                        <span class="outcome-name">${escapeHtml(truncate(outcome, 30))}</span>
+                        <span class="outcome-price ${priceNum >= 0.5 ? 'high' : 'low'}">${formatPercent(priceNum)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        return `
+            <div class="market-card">
+                <div class="market-header">
+                    <h3 class="market-title">${escapeHtml(truncate(event.title, 80))}</h3>
+                    ${event.volume ? `<span class="market-volume">$${formatNumber(event.volume)}</span>` : ''}
+                </div>
+                ${outcomesHtml ? `<div class="market-outcomes">${outcomesHtml}</div>` : ''}
+                <div class="market-footer">
+                    ${event.endDate ? `<span class="market-end">Ends: ${formatDate(event.endDate)}</span>` : ''}
+                    ${event.url ? `<a href="${escapeHtml(event.url)}" target="_blank" rel="noopener" class="market-link">Trade ↗</a>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    marketsContainer.innerHTML = cards;
+}
+
+// Format percentage (0-1 to %)
+function formatPercent(value) {
+    if (value === null || value === undefined) return '--';
+    return Math.round(value * 100) + '%';
+}
+
+// Format date for display
+function formatDate(dateStr) {
+    try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch (e) {
+        return dateStr;
+    }
 }
 
 // Determine severity based on ranking

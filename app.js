@@ -358,20 +358,13 @@ function renderVideos(data) {
     videosContainer.innerHTML = header + rows;
 }
 
-// Render prediction markets in sidebar format
+// Render prediction markets in sidebar format (watchlist style)
 function renderMarkets(data) {
-    console.log('renderMarkets called with:', data);
-    console.log('marketsContainer:', marketsContainer);
-
-    if (!marketsContainer) {
-        console.error('marketsContainer not found!');
-        return;
-    }
+    if (!marketsContainer) return;
 
     const markets = data.markets || [];
-    console.log('Markets count:', markets.length);
 
-    // Store for ticker
+    // Store for ticker - same logic that works
     tickerData.markets = markets.slice(0, 5).map(m => {
         const yesP = m.yesPrice !== null ? Math.round(m.yesPrice * 100) : null;
         return {
@@ -381,36 +374,25 @@ function renderMarkets(data) {
     }).filter(m => m.title && m.yes !== null);
     updateTicker();
 
-    if (markets.length === 0) {
-        marketsContainer.innerHTML = `
-            <div class="feed-empty" style="padding: 30px 15px;">
-                <p>NO MARKETS FOUND</p>
-            </div>
-        `;
+    // Build watchlist using same data that works for ticker
+    if (tickerData.markets.length === 0) {
+        marketsContainer.innerHTML = `<div class="feed-empty" style="padding: 30px 15px;"><p>NO MARKETS FOUND</p></div>`;
         return;
     }
 
-    const items = markets.map(market => {
-        const yesPercent = market.yesPrice !== null ? Math.round(market.yesPrice * 100) : null;
-        const noPercent = market.noPrice !== null ? Math.round(market.noPrice * 100) : null;
+    // Simple watchlist format - exactly like ticker data
+    const items = markets.map(m => {
+        const yesP = m.yesPrice !== null ? Math.round(m.yesPrice * 100) : null;
+        const noP = m.noPrice !== null ? Math.round(m.noPrice * 100) : null;
+        const title = m.title || 'Unknown Market';
+        const url = m.url || '#';
 
         return `
-            <a href="${escapeHtml(market.url)}" target="_blank" rel="noopener" class="sidebar-market">
-                <div class="sidebar-market-title">${escapeHtml(market.title)}</div>
-                <div class="sidebar-market-odds">
-                    ${yesPercent !== null ? `
-                        <div class="sidebar-market-yes">
-                            <span class="label">Yes</span>
-                            <span class="price">${yesPercent}%</span>
-                        </div>
-                    ` : ''}
-                    ${noPercent !== null ? `
-                        <div class="sidebar-market-no">
-                            <span class="label">No</span>
-                            <span class="price">${noPercent}%</span>
-                        </div>
-                    ` : ''}
-                    ${market.volume ? `<span class="sidebar-market-volume">$${formatNumber(market.volume)} vol</span>` : ''}
+            <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="watchlist-item">
+                <div class="watchlist-title">${escapeHtml(title)}</div>
+                <div class="watchlist-odds">
+                    <span class="watchlist-yes">${yesP !== null ? yesP + '%' : '--'} YES</span>
+                    <span class="watchlist-no">${noP !== null ? noP + '%' : '--'} NO</span>
                 </div>
             </a>
         `;

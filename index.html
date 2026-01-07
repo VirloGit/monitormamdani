@@ -171,6 +171,20 @@
         </aside>
     </div>
 
+    <!-- Velocity Modal -->
+    <div class="velocity-modal" id="velocityModal">
+        <div class="velocity-modal-backdrop" onclick="closeVelocityModal()"></div>
+        <div class="velocity-modal-content">
+            <div class="velocity-modal-header">
+                <h3 id="velocityModalTitle">Related Content</h3>
+                <button class="velocity-modal-close" onclick="closeVelocityModal()">&times;</button>
+            </div>
+            <div class="velocity-modal-body" id="velocityModalBody">
+                <!-- Content populated by JS -->
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

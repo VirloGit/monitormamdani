@@ -99,10 +99,9 @@ export async function handler(event, context) {
             ...(kalshiMarkets || []).map(m => ({ ...m, source: 'Kalshi' }))
         ];
 
-        // Build news and video context for velocity analysis
-        const newsContext = (news || []).slice(0, 15).map(n => n.title || '').filter(Boolean);
-        const videoContext = (videos || []).slice(0, 15).map(v => v.title || '').filter(Boolean);
-        const contentContext = [...newsContext, ...videoContext];
+        // Keep full news and video objects for matching
+        const newsItems = (news || []).slice(0, 20);
+        const videoItems = (videos || []).slice(0, 20);
 
         // Enrich each promise
         const enrichedPromises = promises.map(promise => {
@@ -125,16 +124,32 @@ export async function handler(event, context) {
                 return directMatch || keywordMatch;
             });
 
-            // Calculate news/content velocity based on keyword matches
+            // Find matching news items
             const keywords = mapping.keywords || [];
-            let matchCount = 0;
+            const matchedNews = newsItems.filter(item => {
+                const title = (item.title || '').toLowerCase();
+                const description = (item.description || '').toLowerCase();
+                const searchText = `${title} ${description}`;
+                return keywords.some(kw => searchText.includes(kw.toLowerCase()));
+            }).map(item => ({
+                title: item.title,
+                url: item.url,
+                source: item.source || 'News'
+            }));
 
-            for (const content of contentContext) {
-                const lowerContent = content.toLowerCase();
-                if (keywords.some(kw => lowerContent.includes(kw.toLowerCase()))) {
-                    matchCount++;
-                }
-            }
+            // Find matching videos
+            const matchedVideos = videoItems.filter(item => {
+                const title = (item.title || '').toLowerCase();
+                return keywords.some(kw => title.includes(kw.toLowerCase()));
+            }).map(item => ({
+                title: item.title,
+                url: item.url,
+                source: item.source || 'Video',
+                platform: item.platform
+            }));
+
+            // Calculate velocity based on total matches
+            const matchCount = matchedNews.length + matchedVideos.length;
 
             // Determine velocity level
             let velocity = 'low';
@@ -155,10 +170,20 @@ export async function handler(event, context) {
                 velocity: {
                     level: velocity,
                     matchCount: matchCount,
-                    totalContent: contentContext.length
+                    totalContent: newsItems.length + videoItems.length
+                },
+                matchedContent: {
+                    news: matchedNews.slice(0, 5),
+                    videos: matchedVideos.slice(0, 5)
                 }
             };
         });
+
+        // Build content context for Claude
+        const contentContext = [
+            ...newsItems.map(n => n.title || '').filter(Boolean),
+            ...videoItems.map(v => v.title || '').filter(Boolean)
+        ];
 
         // If Claude API is available, use it for smarter velocity analysis
         if (CLAUDE_API_KEY && contentContext.length > 0) {

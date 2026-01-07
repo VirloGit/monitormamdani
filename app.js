@@ -369,6 +369,9 @@ function renderPromises(data) {
     promisesContainer.innerHTML = cards;
 }
 
+// Store enriched promises for modal access
+let enrichedPromisesData = [];
+
 // Render enriched promises with markets and velocity
 function renderEnrichedPromises(promises) {
     if (!promisesContainer) return;
@@ -377,7 +380,10 @@ function renderEnrichedPromises(promises) {
         return; // Keep existing render
     }
 
-    const cards = promises.map(promise => {
+    // Store for modal access
+    enrichedPromisesData = promises;
+
+    const cards = promises.map((promise, index) => {
         // Build markets section
         let marketsHtml = '';
         if (promise.markets && promise.markets.length > 0) {
@@ -399,7 +405,7 @@ function renderEnrichedPromises(promises) {
             `;
         }
 
-        // Build velocity section
+        // Build velocity section with click handler
         let velocityHtml = '';
         if (promise.velocity) {
             const level = promise.velocity.level || 'low';
@@ -409,7 +415,7 @@ function renderEnrichedPromises(promises) {
             velocityHtml = `
                 <div class="promise-velocity">
                     <div class="promise-velocity-label">News & Content</div>
-                    <div class="promise-velocity-badge ${levelClass}">
+                    <div class="promise-velocity-badge ${levelClass}" onclick="openVelocityModal(${index})" title="Click to see related content">
                         <span class="velocity-indicator"></span>
                         <span class="velocity-text">${levelLabel}</span>
                     </div>
@@ -439,6 +445,101 @@ function renderEnrichedPromises(promises) {
     }).join('');
 
     promisesContainer.innerHTML = cards;
+}
+
+// Open velocity modal with related content
+function openVelocityModal(promiseIndex) {
+    const promise = enrichedPromisesData[promiseIndex];
+    if (!promise) return;
+
+    const modal = document.getElementById('velocityModal');
+    const modalTitle = document.getElementById('velocityModalTitle');
+    const modalBody = document.getElementById('velocityModalBody');
+
+    if (!modal || !modalTitle || !modalBody) return;
+
+    // Set title
+    modalTitle.textContent = `${promise.title} - Related Content`;
+
+    // Build modal content
+    const level = promise.velocity?.level || 'low';
+    const matchedContent = promise.matchedContent || { news: [], videos: [] };
+    const newsItems = matchedContent.news || [];
+    const videoItems = matchedContent.videos || [];
+
+    let bodyHtml = `
+        <div class="velocity-badge-level velocity-${level}">
+            <span class="velocity-indicator"></span>
+            <span>${level.toUpperCase()} VELOCITY</span>
+            <span style="margin-left: auto; font-size: 11px;">${promise.velocity?.matchCount || 0} matches</span>
+        </div>
+    `;
+
+    // News section
+    if (newsItems.length > 0) {
+        bodyHtml += `
+            <div class="velocity-modal-section">
+                <div class="velocity-modal-section-title">Related News Articles</div>
+                ${newsItems.map(item => `
+                    <a href="${escapeHtml(item.url || '#')}" target="_blank" rel="noopener" class="velocity-modal-item">
+                        <div class="velocity-modal-item-title">${escapeHtml(item.title || 'Untitled')}</div>
+                        <div class="velocity-modal-item-meta">
+                            <span class="velocity-modal-item-source">${escapeHtml(item.source || 'News')}</span>
+                        </div>
+                    </a>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // Videos section
+    if (videoItems.length > 0) {
+        bodyHtml += `
+            <div class="velocity-modal-section">
+                <div class="velocity-modal-section-title">Related Videos</div>
+                ${videoItems.map(item => `
+                    <a href="${escapeHtml(item.url || '#')}" target="_blank" rel="noopener" class="velocity-modal-item">
+                        <div class="velocity-modal-item-title">${escapeHtml(item.title || 'Untitled')}</div>
+                        <div class="velocity-modal-item-meta">
+                            <span class="velocity-modal-item-source">${escapeHtml(item.platform || item.source || 'Video')}</span>
+                        </div>
+                    </a>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // Empty state
+    if (newsItems.length === 0 && videoItems.length === 0) {
+        bodyHtml += `
+            <div class="velocity-modal-empty">
+                <p>No related content found for this topic.</p>
+                <p style="font-size: 11px; margin-top: 10px;">Keywords searched: ${(promise.keywordsFound || []).join(', ')}</p>
+            </div>
+        `;
+    }
+
+    modalBody.innerHTML = bodyHtml;
+    modal.classList.add('active');
+
+    // Close on escape key
+    document.addEventListener('keydown', handleModalEscape);
+}
+
+// Close velocity modal
+function closeVelocityModal() {
+    const modal = document.getElementById('velocityModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    document.removeEventListener('keydown', handleModalEscape);
+}
+
+// Handle escape key for modal
+function handleModalEscape(e) {
+    if (e.key === 'Escape') {
+        closeVelocityModal();
+    }
 }
 
 // Render news items

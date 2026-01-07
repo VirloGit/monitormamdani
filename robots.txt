@@ -1,0 +1,10 @@
+# robots.txt for monitormamdani.com
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://monitormamdani.com/sitemap.xml
+
+# Disallow API endpoints from indexing
+Disallow: /api/
+Disallow: /.netlify/

@@ -5,9 +5,16 @@
 // Keywords to filter markets (case-insensitive)
 const MAMDANI_KEYWORDS = ['zohran', 'mamdani', 'nyc mayor'];
 
-// Known Mamdani market tickers (discovered via API exploration)
+// Known Mamdani market tickers (discovered via Kalshi website)
 const KNOWN_MAMDANI_TICKERS = [
-    'KXPERSONPRESMAM-45' // "Will Zohran Mamdani become President of the United States before 2045?"
+    'KXPERSONPRESMAM-45',      // Will Mamdani become President before 2045?
+    'KXNYCCORPORATETAX-27JAN01', // Will Mamdani raise corporate taxes before 2027?
+    'KXNYCCHILDCARE-27JAN01',    // Will Mamdani establish universal child care before 2027?
+    'KXNYCTAXMILLIONS-27JAN01',  // Will Mamdani tax incomes over $1M?
+    'KXNYCFREEBUS-27MAR31',      // Will Mamdani make NYC buses free?
+    'KXNYCRENTFREEZE-27JAN01',   // Will Mamdani freeze NYC rents?
+    'KXNYCGROCERY-26JUN30',      // Will Mamdani open city-owned grocery store?
+    'KXNYCMINWAGE-27JAN01',      // Will Mamdani raise minimum wage to $30?
 ];
 
 export async function handler(event, context) {
@@ -79,9 +86,12 @@ export async function handler(event, context) {
         }
 
         // 3. Also paginate through markets endpoint to find any we missed
+        // Search for ticker prefixes that are known to contain Mamdani markets
+        const MAMDANI_TICKER_PREFIXES = ['KXNYC', 'KXPERSONPRESMAM', 'MAM'];
+
         let cursor = null;
         let pageCount = 0;
-        const maxPages = 3;
+        const maxPages = 5; // Increased to find more markets
 
         while (pageCount < maxPages) {
             const url = cursor
@@ -106,14 +116,20 @@ export async function handler(event, context) {
 
                 const title = (market.title || '').toLowerCase();
                 const subtitle = (market.subtitle || '').toLowerCase();
-                const ticker = (market.ticker || '').toLowerCase();
-                const searchText = `${title} ${subtitle} ${ticker}`;
+                const ticker = (market.ticker || '').toUpperCase();
+                const searchText = `${title} ${subtitle}`;
 
-                const isRelevant = MAMDANI_KEYWORDS.some(keyword =>
+                // Check if ticker starts with known Mamdani prefixes
+                const hasKnownPrefix = MAMDANI_TICKER_PREFIXES.some(prefix =>
+                    ticker.startsWith(prefix)
+                );
+
+                // Check if title/subtitle contains Mamdani keywords
+                const hasKeyword = MAMDANI_KEYWORDS.some(keyword =>
                     searchText.includes(keyword.toLowerCase())
                 );
 
-                if (isRelevant) {
+                if (hasKnownPrefix || hasKeyword) {
                     allMarkets.push(market);
                     seenTickers.add(market.ticker);
                 }

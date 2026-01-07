@@ -360,9 +360,16 @@ function renderVideos(data) {
 
 // Render prediction markets in sidebar format
 function renderMarkets(data) {
-    if (!marketsContainer) return;
+    console.log('renderMarkets called with:', data);
+    console.log('marketsContainer:', marketsContainer);
+
+    if (!marketsContainer) {
+        console.error('marketsContainer not found!');
+        return;
+    }
 
     const markets = data.markets || [];
+    console.log('Markets count:', markets.length);
 
     // Store for ticker
     tickerData.markets = markets.slice(0, 5).map(m => {

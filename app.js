@@ -27,7 +27,8 @@ const tickerTrack = document.getElementById('tickerTrack');
 let fetchedData = {
     videos: [],
     news: [],
-    markets: []
+    markets: [],
+    kalshiMarkets: []
 };
 
 // Initialize the app
@@ -53,17 +54,18 @@ async function fetchAllData() {
     updateStatus('FETCHING...', 'loading');
 
     try {
-        // Fetch all endpoints in parallel
-        const [promisesResult, newsResult, trendsResult, videosResult, marketsResult] = await Promise.allSettled([
+        // Fetch all endpoints in parallel (including Kalshi)
+        const [promisesResult, newsResult, trendsResult, videosResult, marketsResult, kalshiResult] = await Promise.allSettled([
             fetchPromises(),
             fetchNews(),
             fetchTrends(),
             fetchVideos(),
-            fetchMarkets()
+            fetchMarkets(),
+            fetchKalshiMarkets()
         ]);
 
         // Check if at least some succeeded
-        const anySuccess = [promisesResult, newsResult, trendsResult, videosResult, marketsResult]
+        const anySuccess = [promisesResult, newsResult, trendsResult, videosResult, marketsResult, kalshiResult]
             .some(r => r.status === 'fulfilled');
 
         if (anySuccess) {
@@ -189,7 +191,7 @@ async function fetchMarkets() {
 
         const data = await response.json();
         fetchedData.markets = data.markets || [];
-        renderMarkets(data);
+        renderMarkets();
         return data;
 
     } catch (error) {
@@ -197,6 +199,28 @@ async function fetchMarkets() {
         if (marketsContainer && isFirstLoad) {
             marketsContainer.innerHTML = `<div class="feed-empty"><p>Markets unavailable</p></div>`;
         }
+        throw error;
+    }
+}
+
+// Fetch Kalshi prediction markets from /api/kalshi
+async function fetchKalshiMarkets() {
+    try {
+        const response = await fetch('/api/kalshi');
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        fetchedData.kalshiMarkets = data.markets || [];
+        renderMarkets();
+        return data;
+
+    } catch (error) {
+        console.error('Error fetching Kalshi markets:', error);
+        // Don't break if Kalshi fails - just log
+        fetchedData.kalshiMarkets = [];
         throw error;
     }
 }
@@ -436,37 +460,48 @@ function renderVideos(data) {
 }
 
 // Render prediction markets in sidebar format (watchlist style)
-function renderMarkets(data) {
+// Combines Polymarket and Kalshi markets
+function renderMarkets() {
     if (!marketsContainer) return;
 
-    const markets = data.markets || [];
+    // Get markets from both sources
+    const polymarketMarkets = (fetchedData.markets || []).map(m => ({ ...m, source: 'Polymarket' }));
+    const kalshiMarkets = (fetchedData.kalshiMarkets || []).map(m => ({ ...m, source: 'Kalshi' }));
 
-    // Store for ticker - same logic that works
-    tickerData.markets = markets.slice(0, 5).map(m => {
+    // Combine: Polymarket first, then Kalshi
+    const allMarkets = [...polymarketMarkets, ...kalshiMarkets];
+
+    // Store for ticker - include both sources
+    tickerData.markets = allMarkets.slice(0, 8).map(m => {
         const yesP = m.yesPrice !== null ? Math.round(m.yesPrice * 100) : null;
         return {
             title: m.title,
-            yes: yesP
+            yes: yesP,
+            source: m.source
         };
     }).filter(m => m.title && m.yes !== null);
     updateTicker();
 
-    // Build watchlist using same data that works for ticker
-    if (tickerData.markets.length === 0) {
+    // Build watchlist
+    if (allMarkets.length === 0) {
         marketsContainer.innerHTML = `<div class="feed-empty" style="padding: 30px 15px;"><p>NO MARKETS FOUND</p></div>`;
         return;
     }
 
-    // Simple watchlist format - exactly like ticker data
-    const items = markets.map(m => {
+    // Simple watchlist format with source label
+    const items = allMarkets.map(m => {
         const yesP = m.yesPrice !== null ? Math.round(m.yesPrice * 100) : null;
         const noP = m.noPrice !== null ? Math.round(m.noPrice * 100) : null;
         const title = m.title || 'Unknown Market';
         const url = m.url || '#';
+        const source = m.source || 'Unknown';
 
         return `
             <a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="watchlist-item">
-                <div class="watchlist-title">${escapeHtml(title)}</div>
+                <div class="watchlist-title">
+                    ${escapeHtml(title)}
+                    <span class="watchlist-source">${escapeHtml(source)}</span>
+                </div>
                 <div class="watchlist-odds">
                     <span class="watchlist-yes">${yesP !== null ? yesP + '%' : '--'} YES</span>
                     <span class="watchlist-no">${noP !== null ? noP + '%' : '--'} NO</span>

@@ -136,6 +136,13 @@ body::after{
   background: rgba(255,176,0,0.1);
 }
 
+.sidebar-sources{
+  font-size: 11px;
+  color: var(--muted);
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+}
+
 .sidebar-markets{
   flex: 1;
   overflow-y: auto;
@@ -243,6 +250,16 @@ body::after{
 .watchlist-no{
   font-size: 11px;
   color: var(--muted);
+}
+
+.watchlist-source{
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Top ticker bar */

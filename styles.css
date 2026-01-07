@@ -333,6 +333,34 @@ body::after{
   color: var(--muted);
   font-size: 18px;              /* 12px * 1.5 */
 }
+.subline.built-by{
+  margin-top: 4px;
+  font-size: 14px;
+}
+.subline.built-by a{
+  color: var(--amber);
+  text-decoration: none;
+}
+.subline.built-by a:hover{
+  text-decoration: underline;
+}
+.feedback-btn{
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--bg);
+  background: var(--amber);
+  border: none;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.feedback-btn:hover{
+  background: var(--amber-2);
+}
 .status{
   display:flex;
   align-items:center;

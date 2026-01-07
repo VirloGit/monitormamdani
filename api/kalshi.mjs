@@ -3,7 +3,12 @@
 // Fetches Mamdani prediction markets from Kalshi Elections API
 
 // Keywords to filter markets (case-insensitive)
-const MAMDANI_KEYWORDS = ['zohran', 'mamdani', 'zohran mamdani'];
+const MAMDANI_KEYWORDS = ['zohran', 'mamdani', 'nyc mayor'];
+
+// Known Mamdani market tickers (discovered via API exploration)
+const KNOWN_MAMDANI_TICKERS = [
+    'KXPERSONPRESMAM-45' // "Will Zohran Mamdani become President of the United States before 2045?"
+];
 
 export async function handler(event, context) {
     if (event.httpMethod !== 'GET') {
@@ -17,11 +22,67 @@ export async function handler(event, context) {
 
     try {
         const allMarkets = [];
+        const seenTickers = new Set();
+
+        // 1. First fetch known Mamdani tickers directly
+        for (const ticker of KNOWN_MAMDANI_TICKERS) {
+            try {
+                const response = await fetch(`${KALSHI_API_BASE}/markets/${ticker}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.market) {
+                        allMarkets.push(data.market);
+                        seenTickers.add(data.market.ticker);
+                    }
+                }
+            } catch (e) {
+                console.log(`Failed to fetch ticker ${ticker}:`, e.message);
+            }
+        }
+
+        // 2. Search events for Mamdani-related markets
+        try {
+            const eventsResponse = await fetch(`${KALSHI_API_BASE}/events?limit=200&status=open`, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (eventsResponse.ok) {
+                const eventsData = await eventsResponse.json();
+                const events = eventsData.events || [];
+
+                for (const event of events) {
+                    const title = (event.title || '').toLowerCase();
+                    const category = (event.category || '').toLowerCase();
+                    const searchText = `${title} ${category}`;
+
+                    const isRelevant = MAMDANI_KEYWORDS.some(keyword =>
+                        searchText.includes(keyword.toLowerCase())
+                    );
+
+                    if (isRelevant && event.markets) {
+                        for (const market of event.markets) {
+                            if (!seenTickers.has(market.ticker)) {
+                                allMarkets.push(market);
+                                seenTickers.add(market.ticker);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.log('Events search failed:', e.message);
+        }
+
+        // 3. Also paginate through markets endpoint to find any we missed
         let cursor = null;
         let pageCount = 0;
-        const maxPages = 5; // Limit pagination to avoid timeout
+        const maxPages = 3;
 
-        // Paginate through markets
         while (pageCount < maxPages) {
             const url = cursor
                 ? `${KALSHI_API_BASE}/markets?limit=1000&cursor=${cursor}`
@@ -29,24 +90,24 @@ export async function handler(event, context) {
 
             const response = await fetch(url, {
                 method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
+                headers: { 'Accept': 'application/json' }
             });
 
             if (!response.ok) {
-                console.error('Kalshi API error:', response.status);
+                console.error('Kalshi markets API error:', response.status);
                 break;
             }
 
             const data = await response.json();
             const markets = data.markets || [];
 
-            // Filter for Mamdani-related markets
             for (const market of markets) {
+                if (seenTickers.has(market.ticker)) continue;
+
                 const title = (market.title || '').toLowerCase();
                 const subtitle = (market.subtitle || '').toLowerCase();
-                const searchText = `${title} ${subtitle}`;
+                const ticker = (market.ticker || '').toLowerCase();
+                const searchText = `${title} ${subtitle} ${ticker}`;
 
                 const isRelevant = MAMDANI_KEYWORDS.some(keyword =>
                     searchText.includes(keyword.toLowerCase())
@@ -54,23 +115,33 @@ export async function handler(event, context) {
 
                 if (isRelevant) {
                     allMarkets.push(market);
+                    seenTickers.add(market.ticker);
                 }
             }
 
-            // Check for next page
             cursor = data.cursor;
-            if (!cursor || markets.length === 0) {
-                break;
-            }
-
+            if (!cursor || markets.length === 0) break;
             pageCount++;
         }
 
-        // Normalize to match Polymarket format exactly
+        // Normalize to match Polymarket format
+        // Kalshi uses yes_bid/yes_ask in CENTS (0-100), not decimals
         const normalizedMarkets = allMarkets.map(market => {
-            // Kalshi yes_price is already 0-1 decimal
-            const yesPrice = market.yes_price !== undefined ? market.yes_price : null;
-            const noPrice = yesPrice !== null ? (1 - yesPrice) : null;
+            // yes_bid and yes_ask are in cents (0-100)
+            // Convert to decimal (0-1) to match Polymarket format
+            let yesPrice = null;
+            let noPrice = null;
+
+            // Try yes_bid first (best bid price), fall back to last_price
+            if (market.yes_bid !== undefined && market.yes_bid !== null) {
+                yesPrice = market.yes_bid / 100; // Convert cents to decimal
+            } else if (market.last_price !== undefined && market.last_price !== null) {
+                yesPrice = market.last_price / 100;
+            }
+
+            if (yesPrice !== null) {
+                noPrice = 1 - yesPrice;
+            }
 
             return {
                 id: market.ticker,
@@ -81,7 +152,7 @@ export async function handler(event, context) {
                 volume: market.volume || 0,
                 liquidity: market.open_interest || 0,
                 endDate: market.close_time,
-                active: market.status === 'active',
+                active: market.status === 'active' || market.status === 'open',
                 url: `https://kalshi.com/markets/${market.ticker}`,
                 source: 'kalshi'
             };
@@ -101,6 +172,7 @@ export async function handler(event, context) {
                 markets: normalizedMarkets,
                 count: normalizedMarkets.length,
                 debug: {
+                    knownTickersFetched: KNOWN_MAMDANI_TICKERS.length,
                     pagesScanned: pageCount + 1,
                     marketsFound: normalizedMarkets.length
                 }

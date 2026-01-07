@@ -19,8 +19,16 @@ const newsContainer = document.getElementById('newsContainer');
 const trendsContainer = document.getElementById('trendsContainer');
 const videosContainer = document.getElementById('videosContainer');
 const marketsContainer = document.getElementById('marketsContainer');
+const alertsContainer = document.getElementById('alertsContainer');
 const statusText = document.getElementById('statusText');
 const tickerTrack = document.getElementById('tickerTrack');
+
+// Store fetched data for alerts generation
+let fetchedData = {
+    videos: [],
+    news: [],
+    markets: []
+};
 
 // Initialize the app
 function init() {
@@ -60,6 +68,11 @@ async function fetchAllData() {
 
         if (anySuccess) {
             updateStatus('LIVE', 'success');
+            // Generate alerts after data is fetched (only on first load or every 5 minutes)
+            if (isFirstLoad || !window.lastAlertsTime || Date.now() - window.lastAlertsTime > 300000) {
+                generateAlerts();
+                window.lastAlertsTime = Date.now();
+            }
         } else {
             updateStatus('ERROR', 'error');
         }
@@ -104,6 +117,7 @@ async function fetchNews() {
         }
 
         const data = await response.json();
+        fetchedData.news = data.items || [];
         renderNews(data);
         return data;
 
@@ -151,6 +165,7 @@ async function fetchVideos() {
         }
 
         const data = await response.json();
+        fetchedData.videos = data.items || [];
         renderVideos(data);
         return data;
 
@@ -173,6 +188,7 @@ async function fetchMarkets() {
         }
 
         const data = await response.json();
+        fetchedData.markets = data.markets || [];
         renderMarkets(data);
         return data;
 
@@ -189,6 +205,67 @@ async function fetchMarkets() {
 function updateStatus(text, type) {
     if (!statusText) return;
     statusText.textContent = text;
+}
+
+// Generate AI-powered alerts by calling Claude API
+async function generateAlerts() {
+    if (!alertsContainer) return;
+
+    try {
+        const response = await fetch('/api/claude-alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                videos: fetchedData.videos,
+                news: fetchedData.news,
+                markets: fetchedData.markets
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderAlerts(data.alerts || []);
+
+    } catch (error) {
+        console.error('Error generating alerts:', error);
+        alertsContainer.innerHTML = `
+            <div class="feed-empty">
+                <p>ALERTS UNAVAILABLE</p>
+            </div>
+        `;
+    }
+}
+
+// Render AI-generated alerts
+function renderAlerts(alerts) {
+    if (!alertsContainer) return;
+
+    if (alerts.length === 0) {
+        alertsContainer.innerHTML = `
+            <div class="feed-empty">
+                <p>NO ALERTS AT THIS TIME</p>
+            </div>
+        `;
+        return;
+    }
+
+    const alertItems = alerts.map(alert => {
+        const typeClass = (alert.type || 'trend').toLowerCase();
+        return `
+            <div class="alert-item alert-${typeClass}">
+                <div class="alert-header">
+                    <span class="alert-type ${typeClass}">${escapeHtml(alert.type || 'ALERT')}</span>
+                    <span class="alert-title">${escapeHtml(alert.title || '')}</span>
+                </div>
+                <p class="alert-description">${escapeHtml(alert.description || '')}</p>
+            </div>
+        `;
+    }).join('');
+
+    alertsContainer.innerHTML = alertItems;
 }
 
 // Render campaign promises
@@ -211,7 +288,7 @@ function renderPromises(data) {
             <div class="promise-header">
                 <span class="promise-icon">${promise.icon || '📋'}</span>
                 <h3 class="promise-title">${escapeHtml(promise.title)}</h3>
-                <span class="promise-status ${promise.status === 'pending' ? 'pending' : ''}">${promise.status || 'ACTIVE'}</span>
+                <span class="promise-status in-progress">IN PROGRESS</span>
             </div>
             <p class="promise-excerpt">${escapeHtml(promise.excerpt || '')}</p>
             ${promise.keywordsFound && promise.keywordsFound.length > 0 ? `

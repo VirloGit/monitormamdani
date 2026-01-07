@@ -748,6 +748,118 @@ body::after{
   color: var(--muted);
 }
 
+/* Promise Data Row - Markets & Velocity */
+.promise-data-row{
+  display: flex;
+  gap: 15px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.promise-markets{
+  flex: 1;
+  min-width: 150px;
+}
+
+.promise-markets-label,
+.promise-velocity-label{
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.promise-markets-list{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.promise-market-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  font-size: 12px;
+  transition: border-color 0.2s;
+}
+
+.promise-market-item:hover{
+  border-color: var(--amber);
+}
+
+.promise-market-source{
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.promise-market-odds{
+  color: var(--up);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.promise-velocity{
+  min-width: 100px;
+}
+
+.promise-velocity-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+}
+
+.promise-velocity-badge .velocity-indicator{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.promise-velocity-badge .velocity-text{
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Velocity levels */
+.velocity-low .velocity-indicator{
+  background: var(--muted);
+}
+.velocity-low .velocity-text{
+  color: var(--muted);
+}
+
+.velocity-medium .velocity-indicator{
+  background: var(--warn);
+}
+.velocity-medium .velocity-text{
+  color: var(--warn);
+}
+
+.velocity-high .velocity-indicator{
+  background: var(--up);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.velocity-high .velocity-text{
+  color: var(--up);
+}
+
+@keyframes pulse{
+  0%, 100%{ opacity: 1; }
+  50%{ opacity: 0.5; }
+}
+
 /* Notable Alerts Panel */
 .alerts-panel{
   border: 1px solid var(--amber);

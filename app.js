@@ -28,7 +28,8 @@ let fetchedData = {
     videos: [],
     news: [],
     markets: [],
-    kalshiMarkets: []
+    kalshiMarkets: [],
+    promises: []
 };
 
 // Initialize the app
@@ -87,7 +88,7 @@ async function fetchAllData() {
     }
 }
 
-// Fetch campaign promises from /api/platform-promises
+// Fetch campaign promises from /api/platform-promises and enrich with markets/velocity
 async function fetchPromises() {
     try {
         const response = await fetch('/api/platform-promises');
@@ -97,7 +98,14 @@ async function fetchPromises() {
         }
 
         const data = await response.json();
+        fetchedData.promises = data.promises || [];
+
+        // First render basic promises
         renderPromises(data);
+
+        // Then enrich with markets and velocity (async, will re-render when done)
+        enrichPromisesWithMarketsAndVelocity(data.promises || []);
+
         return data;
 
     } catch (error) {
@@ -106,6 +114,41 @@ async function fetchPromises() {
             promisesContainer.innerHTML = `<div class="feed-empty"><p>Platform unavailable</p></div>`;
         }
         throw error;
+    }
+}
+
+// Enrich promises with prediction market odds and news velocity
+async function enrichPromisesWithMarketsAndVelocity(promises) {
+    if (!promises || promises.length === 0) return;
+
+    // Wait a bit for other data to load
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    try {
+        const response = await fetch('/api/promise-enrichment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                promises: promises,
+                markets: fetchedData.markets,
+                kalshiMarkets: fetchedData.kalshiMarkets,
+                news: fetchedData.news,
+                videos: fetchedData.videos
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.enrichedPromises && data.enrichedPromises.length > 0) {
+            renderEnrichedPromises(data.enrichedPromises);
+        }
+    } catch (error) {
+        console.error('Error enriching promises:', error);
+        // Keep basic render, don't break
     }
 }
 
@@ -322,6 +365,78 @@ function renderPromises(data) {
             ` : ''}
         </div>
     `).join('');
+
+    promisesContainer.innerHTML = cards;
+}
+
+// Render enriched promises with markets and velocity
+function renderEnrichedPromises(promises) {
+    if (!promisesContainer) return;
+
+    if (promises.length === 0) {
+        return; // Keep existing render
+    }
+
+    const cards = promises.map(promise => {
+        // Build markets section
+        let marketsHtml = '';
+        if (promise.markets && promise.markets.length > 0) {
+            const marketItems = promise.markets.map(m => {
+                const yesP = m.yesPrice !== null ? Math.round(m.yesPrice * 100) : null;
+                return `
+                    <a href="${escapeHtml(m.url || '#')}" target="_blank" rel="noopener" class="promise-market-item">
+                        <span class="promise-market-source">${escapeHtml(m.source || 'Market')}</span>
+                        <span class="promise-market-odds">${yesP !== null ? yesP + '% YES' : '--'}</span>
+                    </a>
+                `;
+            }).join('');
+
+            marketsHtml = `
+                <div class="promise-markets">
+                    <div class="promise-markets-label">Prediction Markets</div>
+                    <div class="promise-markets-list">${marketItems}</div>
+                </div>
+            `;
+        }
+
+        // Build velocity section
+        let velocityHtml = '';
+        if (promise.velocity) {
+            const level = promise.velocity.level || 'low';
+            const levelClass = `velocity-${level}`;
+            const levelLabel = level.toUpperCase();
+
+            velocityHtml = `
+                <div class="promise-velocity">
+                    <div class="promise-velocity-label">News & Content</div>
+                    <div class="promise-velocity-badge ${levelClass}">
+                        <span class="velocity-indicator"></span>
+                        <span class="velocity-text">${levelLabel}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="promise-card ${promise.markets && promise.markets.length > 0 ? 'has-markets' : ''}">
+                <div class="promise-header">
+                    <span class="promise-icon">${promise.icon || '📋'}</span>
+                    <h3 class="promise-title">${escapeHtml(promise.title)}</h3>
+                    <span class="promise-status in-progress">IN PROGRESS</span>
+                </div>
+                <p class="promise-excerpt">${escapeHtml(promise.excerpt || '')}</p>
+                ${promise.keywordsFound && promise.keywordsFound.length > 0 ? `
+                    <div class="promise-keywords">
+                        ${promise.keywordsFound.slice(0, 3).map(kw => `<span class="promise-keyword">${escapeHtml(kw)}</span>`).join('')}
+                    </div>
+                ` : ''}
+                <div class="promise-data-row">
+                    ${marketsHtml}
+                    ${velocityHtml}
+                </div>
+            </div>
+        `;
+    }).join('');
 
     promisesContainer.innerHTML = cards;
 }

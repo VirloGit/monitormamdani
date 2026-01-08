@@ -3,11 +3,13 @@
 
 const POLL_INTERVAL = 60000; // 60 seconds
 const NEWS_POLL_INTERVAL = 3600000; // 1 hour for Firecrawl news (save credits)
+const VIRLO_POLL_INTERVAL = 86400000; // 24 hours for Virlo API (save credits)
 const MAX_ITEMS = 50;
 
 let pollTimer = null;
 let isFirstLoad = true;
 let lastNewsFetchTime = 0; // Track last news fetch to limit to once per hour
+let lastVirloFetchTime = 0; // Track last Virlo fetch to limit to once per day
 
 // Store fetched data for ticker
 let tickerData = {
@@ -58,15 +60,17 @@ async function fetchAllData() {
 
     try {
         // Only fetch news if it's been more than 1 hour (save Firecrawl credits)
+        // Only fetch Virlo (trends/videos) if it's been more than 24 hours (save credits)
         const now = Date.now();
         const shouldFetchNews = (now - lastNewsFetchTime) >= NEWS_POLL_INTERVAL;
+        const shouldFetchVirlo = (now - lastVirloFetchTime) >= VIRLO_POLL_INTERVAL;
 
-        // Build fetch array - conditionally include news
+        // Build fetch array - conditionally include news and Virlo
         const fetchPromises_arr = [
             fetchPromises(),
             shouldFetchNews ? fetchNews() : Promise.resolve(null),
-            fetchTrends(),
-            fetchVideos(),
+            shouldFetchVirlo ? fetchTrends() : Promise.resolve(null),
+            shouldFetchVirlo ? fetchVideos() : Promise.resolve(null),
             fetchMarkets(),
             fetchKalshiMarkets()
         ];
@@ -74,9 +78,12 @@ async function fetchAllData() {
         // Fetch all endpoints in parallel (including Kalshi)
         const [promisesResult, newsResult, trendsResult, videosResult, marketsResult, kalshiResult] = await Promise.allSettled(fetchPromises_arr);
 
-        // Update last news fetch time if we fetched news
+        // Update last fetch times
         if (shouldFetchNews && newsResult.status === 'fulfilled') {
             lastNewsFetchTime = now;
+        }
+        if (shouldFetchVirlo && (trendsResult.status === 'fulfilled' || videosResult.status === 'fulfilled')) {
+            lastVirloFetchTime = now;
         }
 
         // Check if at least some succeeded

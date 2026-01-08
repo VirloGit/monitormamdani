@@ -1449,3 +1449,257 @@ body::after{
     max-height: 350px;
   }
 }
+
+/* Hero Actions - Contact & Share */
+.hero-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.share-wrapper{
+  position: relative;
+}
+
+.share-btn{
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.share-btn:hover{
+  border-color: var(--amber);
+  background: rgba(255,176,0,0.1);
+}
+
+/* Share Dropdown */
+.share-dropdown{
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  min-width: 160px;
+  z-index: 100;
+}
+
+.share-dropdown.active{
+  display: block;
+}
+
+.share-dropdown a{
+  display: block;
+  padding: 10px 14px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s;
+}
+
+.share-dropdown a:last-child{
+  border-bottom: none;
+}
+
+.share-dropdown a:hover{
+  background: rgba(255,176,0,0.1);
+  color: var(--amber);
+}
+
+/* Contact Modal */
+.contact-modal{
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-modal.active{
+  display: flex;
+}
+
+.contact-modal-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.contact-modal-content{
+  position: relative;
+  width: 90%;
+  max-width: 450px;
+  background: var(--panel);
+  border: 1px solid var(--amber);
+  box-shadow: 0 0 40px rgba(255, 176, 0, 0.2);
+}
+
+.contact-modal-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
+}
+
+.contact-modal-header h3{
+  margin: 0;
+  font-size: 16px;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contact-modal-close{
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.contact-modal-close:hover{
+  color: var(--text);
+}
+
+.contact-modal-body{
+  padding: 20px;
+}
+
+/* Contact Form */
+.form-group{
+  margin-bottom: 16px;
+}
+
+.form-group label{
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group textarea{
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+  outline: none;
+  border-color: var(--amber);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder{
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.form-group textarea{
+  resize: vertical;
+  min-height: 100px;
+}
+
+.contact-submit-btn{
+  width: 100%;
+  padding: 12px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--bg);
+  background: var(--amber);
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.contact-submit-btn:hover{
+  background: var(--amber-2);
+}
+
+.contact-submit-btn:disabled{
+  background: var(--muted);
+  cursor: not-allowed;
+}
+
+/* Contact Success */
+.contact-success{
+  display: none;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.contact-success.active{
+  display: block;
+}
+
+.contact-success-icon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  color: var(--bg);
+  background: var(--up);
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+.contact-success p{
+  margin: 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Hide form when success shows */
+#contactForm.hidden{
+  display: none;
+}
+
+/* Copy link toast */
+.copy-toast{
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: var(--up);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1001;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.copy-toast.active{
+  opacity: 1;
+}

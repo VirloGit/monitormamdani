@@ -63,7 +63,19 @@
                                 <h1 class="h1">Monitor Mamdani</h1>
                                 <p class="subline">Monitoring Zohran Mamdani</p>
                                 <p class="subline built-by">Built by <a href="https://virlo.ai" target="_blank">Virlo Team</a></p>
-                                <a href="mailto:nic@virlo.ai" class="feedback-btn">Submit suggestions or feedback</a>
+                                <div class="hero-actions">
+                                    <button class="feedback-btn" onclick="openContactModal()">Contact</button>
+                                    <div class="share-wrapper">
+                                        <button class="share-btn" onclick="handleShare()">Share</button>
+                                        <div class="share-dropdown" id="shareDropdown">
+                                            <a href="#" onclick="shareOn('x'); return false;">Share on X</a>
+                                            <a href="#" onclick="shareOn('facebook'); return false;">Share on Facebook</a>
+                                            <a href="#" onclick="shareOn('linkedin'); return false;">Share on LinkedIn</a>
+                                            <a href="#" onclick="shareOn('reddit'); return false;">Share on Reddit</a>
+                                            <a href="#" onclick="copyLink(); return false;">Copy link</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- Term Countdown -->
@@ -207,6 +219,38 @@
             </div>
             <div class="velocity-modal-body" id="velocityModalBody">
                 <!-- Content populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="contact-modal" id="contactModal">
+        <div class="contact-modal-backdrop" onclick="closeContactModal()"></div>
+        <div class="contact-modal-content">
+            <div class="contact-modal-header">
+                <h3>Contact Us</h3>
+                <button class="contact-modal-close" onclick="closeContactModal()">&times;</button>
+            </div>
+            <div class="contact-modal-body">
+                <form id="contactForm" action="https://formspree.io/f/xanybwzj" method="POST">
+                    <div class="form-group">
+                        <label for="contactName">Name</label>
+                        <input type="text" id="contactName" name="name" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email</label>
+                        <input type="email" id="contactEmail" name="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" name="message" required placeholder="Your message..." rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="contact-submit-btn" id="contactSubmitBtn">Send Message</button>
+                </form>
+                <div class="contact-success" id="contactSuccess">
+                    <span class="contact-success-icon">✓</span>
+                    <p>Message sent successfully!</p>
+                </div>
             </div>
         </div>
     </div>

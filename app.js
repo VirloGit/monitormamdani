@@ -897,3 +897,202 @@ window.addEventListener('beforeunload', () => {
         clearInterval(countdownTimer);
     }
 });
+
+// ============================================
+// Contact Modal Functions
+// ============================================
+
+function openContactModal() {
+    const modal = document.getElementById('contactModal');
+    const form = document.getElementById('contactForm');
+    const success = document.getElementById('contactSuccess');
+
+    if (modal) {
+        // Reset state
+        if (form) {
+            form.classList.remove('hidden');
+            form.reset();
+        }
+        if (success) {
+            success.classList.remove('active');
+        }
+
+        modal.classList.add('active');
+        document.addEventListener('keydown', handleContactModalEscape);
+    }
+}
+
+function closeContactModal() {
+    const modal = document.getElementById('contactModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    document.removeEventListener('keydown', handleContactModalEscape);
+}
+
+function handleContactModalEscape(e) {
+    if (e.key === 'Escape') {
+        closeContactModal();
+    }
+}
+
+// Handle contact form submission via Formspree
+document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('contactSubmitBtn');
+            const success = document.getElementById('contactSuccess');
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+            }
+
+            try {
+                const formData = new FormData(contactForm);
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Show success message
+                    contactForm.classList.add('hidden');
+                    if (success) {
+                        success.classList.add('active');
+                    }
+
+                    // Auto-close modal after 2 seconds
+                    setTimeout(() => {
+                        closeContactModal();
+                    }, 2000);
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                console.error('Contact form error:', error);
+                alert('Failed to send message. Please try again.');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
+                }
+            }
+        });
+    }
+});
+
+// ============================================
+// Share Button Functions
+// ============================================
+
+const SHARE_TEXT = 'monitoring mamdani: odds, viral content, and news in one place';
+const SHARE_URL = window.location.href;
+
+function handleShare() {
+    // Check if Web Share API is available
+    if (navigator.share) {
+        navigator.share({
+            title: 'Monitor Mamdani',
+            text: SHARE_TEXT,
+            url: SHARE_URL
+        }).catch((error) => {
+            // User cancelled or error - fall back to dropdown
+            if (error.name !== 'AbortError') {
+                toggleShareDropdown();
+            }
+        });
+    } else {
+        // No Web Share API - show dropdown
+        toggleShareDropdown();
+    }
+}
+
+function toggleShareDropdown() {
+    const dropdown = document.getElementById('shareDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+function closeShareDropdown() {
+    const dropdown = document.getElementById('shareDropdown');
+    if (dropdown) {
+        dropdown.classList.remove('active');
+    }
+}
+
+function shareOn(platform) {
+    const encodedText = encodeURIComponent(SHARE_TEXT);
+    const encodedUrl = encodeURIComponent(SHARE_URL);
+
+    let shareUrl = '';
+
+    switch (platform) {
+        case 'x':
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+            break;
+        case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+            break;
+        case 'linkedin':
+            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+            break;
+        case 'reddit':
+            shareUrl = `https://reddit.com/submit?url=${encodedUrl}&title=${encodedText}`;
+            break;
+    }
+
+    if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+
+    closeShareDropdown();
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(SHARE_URL).then(() => {
+        showCopyToast();
+    }).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = SHARE_URL;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopyToast();
+    });
+
+    closeShareDropdown();
+}
+
+function showCopyToast() {
+    // Create toast if it doesn't exist
+    let toast = document.querySelector('.copy-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'copy-toast';
+        toast.textContent = 'Link copied!';
+        document.body.appendChild(toast);
+    }
+
+    toast.classList.add('active');
+
+    setTimeout(() => {
+        toast.classList.remove('active');
+    }, 2000);
+}
+
+// Close share dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const shareWrapper = document.querySelector('.share-wrapper');
+    if (shareWrapper && !shareWrapper.contains(e.target)) {
+        closeShareDropdown();
+    }
+});

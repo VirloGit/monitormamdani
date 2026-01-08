@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="styles.css">
 
     <!-- ShareThis -->
-    <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=695fb41dae31a7649e7db441&product=inline-share-buttons&networks=twitter,email,linkedin' async='async'></script>
+    <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=695fb41dae31a7649e7db441&product=custom-share-buttons' async='async'></script>
 </head>
 <body>
     <!-- Top ticker bar -->
@@ -68,7 +68,11 @@
                                 <p class="subline built-by">Built by <a href="https://virlo.ai" target="_blank">Virlo Team</a></p>
                                 <div class="hero-actions">
                                     <button class="hero-btn" onclick="openContactModal()">Contact</button>
-                                    <div class="sharethis-inline-share-buttons"></div>
+                                    <div class="sharethis-custom-buttons">
+                                        <div data-network="twitter" class="st-custom-button"></div>
+                                        <div data-network="email" class="st-custom-button"></div>
+                                        <div data-network="linkedin" class="st-custom-button"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

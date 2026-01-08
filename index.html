@@ -33,6 +33,9 @@
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- ShareThis -->
+    <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=678e8c0f50d9e60012576344&product=inline-share-buttons" async="async"></script>
 </head>
 <body>
     <!-- Top ticker bar -->
@@ -64,17 +67,8 @@
                                 <p class="subline">Monitoring Zohran Mamdani</p>
                                 <p class="subline built-by">Built by <a href="https://virlo.ai" target="_blank">Virlo Team</a></p>
                                 <div class="hero-actions">
-                                    <button class="feedback-btn" onclick="openContactModal()">Contact</button>
-                                    <div class="share-wrapper">
-                                        <button class="share-btn" onclick="handleShare()">Share</button>
-                                        <div class="share-dropdown" id="shareDropdown">
-                                            <a href="#" onclick="shareOn('x'); return false;">Share on X</a>
-                                            <a href="#" onclick="shareOn('facebook'); return false;">Share on Facebook</a>
-                                            <a href="#" onclick="shareOn('linkedin'); return false;">Share on LinkedIn</a>
-                                            <a href="#" onclick="shareOn('reddit'); return false;">Share on Reddit</a>
-                                            <a href="#" onclick="copyLink(); return false;">Copy link</a>
-                                        </div>
-                                    </div>
+                                    <button class="hero-btn" onclick="openContactModal()">Contact</button>
+                                    <div class="sharethis-inline-share-buttons"></div>
                                 </div>
                             </div>
                         </div>

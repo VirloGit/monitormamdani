@@ -2,10 +2,12 @@
 // Virlo Trends + Comet + Firecrawl - Monitoring Zohran Mamdani
 
 const POLL_INTERVAL = 60000; // 60 seconds
+const NEWS_POLL_INTERVAL = 3600000; // 1 hour for Firecrawl news (save credits)
 const MAX_ITEMS = 50;
 
 let pollTimer = null;
 let isFirstLoad = true;
+let lastNewsFetchTime = 0; // Track last news fetch to limit to once per hour
 
 // Store fetched data for ticker
 let tickerData = {
@@ -55,15 +57,27 @@ async function fetchAllData() {
     updateStatus('FETCHING...', 'loading');
 
     try {
-        // Fetch all endpoints in parallel (including Kalshi)
-        const [promisesResult, newsResult, trendsResult, videosResult, marketsResult, kalshiResult] = await Promise.allSettled([
+        // Only fetch news if it's been more than 1 hour (save Firecrawl credits)
+        const now = Date.now();
+        const shouldFetchNews = (now - lastNewsFetchTime) >= NEWS_POLL_INTERVAL;
+
+        // Build fetch array - conditionally include news
+        const fetchPromises_arr = [
             fetchPromises(),
-            fetchNews(),
+            shouldFetchNews ? fetchNews() : Promise.resolve(null),
             fetchTrends(),
             fetchVideos(),
             fetchMarkets(),
             fetchKalshiMarkets()
-        ]);
+        ];
+
+        // Fetch all endpoints in parallel (including Kalshi)
+        const [promisesResult, newsResult, trendsResult, videosResult, marketsResult, kalshiResult] = await Promise.allSettled(fetchPromises_arr);
+
+        // Update last news fetch time if we fetched news
+        if (shouldFetchNews && newsResult.status === 'fulfilled') {
+            lastNewsFetchTime = now;
+        }
 
         // Check if at least some succeeded
         const anySuccess = [promisesResult, newsResult, trendsResult, videosResult, marketsResult, kalshiResult]

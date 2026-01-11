@@ -4,12 +4,14 @@
 const POLL_INTERVAL = 60000; // 60 seconds
 const NEWS_POLL_INTERVAL = 3600000; // 1 hour for Firecrawl news (save credits)
 const VIRLO_POLL_INTERVAL = 86400000; // 24 hours for Virlo API (save credits)
+const NYC_OPEN_DATA_POLL_INTERVAL = 3600000; // 1 hour for NYC Open Data (free API, but no need for frequent updates)
 const MAX_ITEMS = 50;
 
 let pollTimer = null;
 let isFirstLoad = true;
 let lastNewsFetchTime = 0; // Track last news fetch to limit to once per hour
 let lastVirloFetchTime = 0; // Track last Virlo fetch to limit to once per day
+let lastNYCDataFetchTime = 0; // Track last NYC Open Data fetch
 
 // Store fetched data for ticker
 let tickerData = {
@@ -26,6 +28,12 @@ const marketsContainer = document.getElementById('marketsContainer');
 const alertsContainer = document.getElementById('alertsContainer');
 const statusText = document.getElementById('statusText');
 const tickerTrack = document.getElementById('tickerTrack');
+
+// NYC Open Data DOM Elements
+const nyc311Container = document.getElementById('nyc311Container');
+const nycLegislationContainer = document.getElementById('nycLegislationContainer');
+const nycBudgetContainer = document.getElementById('nycBudgetContainer');
+const nycMMRContainer = document.getElementById('nycMMRContainer');
 
 // Store fetched data for alerts generation
 let fetchedData = {
@@ -61,11 +69,13 @@ async function fetchAllData() {
     try {
         // Only fetch news if it's been more than 1 hour (save Firecrawl credits)
         // Only fetch Virlo (trends/videos) if it's been more than 24 hours (save credits)
+        // Only fetch NYC Open Data if it's been more than 1 hour
         const now = Date.now();
         const shouldFetchNews = (now - lastNewsFetchTime) >= NEWS_POLL_INTERVAL;
         const shouldFetchVirlo = (now - lastVirloFetchTime) >= VIRLO_POLL_INTERVAL;
+        const shouldFetchNYCData = (now - lastNYCDataFetchTime) >= NYC_OPEN_DATA_POLL_INTERVAL;
 
-        // Build fetch array - conditionally include news and Virlo
+        // Build fetch array - conditionally include news, Virlo, and NYC data
         const fetchPromises_arr = [
             fetchPromises(),
             shouldFetchNews ? fetchNews() : Promise.resolve(null),
@@ -84,6 +94,13 @@ async function fetchAllData() {
         }
         if (shouldFetchVirlo && (trendsResult.status === 'fulfilled' || videosResult.status === 'fulfilled')) {
             lastVirloFetchTime = now;
+        }
+
+        // Fetch NYC Open Data separately (non-blocking, lower priority)
+        if (shouldFetchNYCData) {
+            fetchNYCOpenData().then(() => {
+                lastNYCDataFetchTime = Date.now();
+            }).catch(err => console.error('NYC Open Data fetch error:', err));
         }
 
         // Check if at least some succeeded
@@ -918,6 +935,274 @@ window.addEventListener('beforeunload', () => {
         clearInterval(countdownTimer);
     }
 });
+
+// ============================================
+// NYC Open Data Functions
+// ============================================
+
+// Fetch all NYC Open Data endpoints
+async function fetchNYCOpenData() {
+    console.log('Fetching NYC Open Data...');
+
+    // Fetch all NYC data in parallel
+    const [data311, legislation, budget, mmr] = await Promise.allSettled([
+        fetch('/api/nyc-311').then(r => r.json()),
+        fetch('/api/nyc-legislation').then(r => r.json()),
+        fetch('/api/nyc-budget').then(r => r.json()),
+        fetch('/api/nyc-mmr').then(r => r.json())
+    ]);
+
+    // Render each dataset
+    if (data311.status === 'fulfilled') {
+        render311Data(data311.value);
+    }
+    if (legislation.status === 'fulfilled') {
+        renderLegislationData(legislation.value);
+    }
+    if (budget.status === 'fulfilled') {
+        renderBudgetData(budget.value);
+    }
+    if (mmr.status === 'fulfilled') {
+        renderMMRData(mmr.value);
+    }
+}
+
+// Render 311 Service Requests
+function render311Data(data) {
+    if (!nyc311Container) return;
+
+    if (data.error || !data.topComplaintTypes || data.topComplaintTypes.length === 0) {
+        nyc311Container.innerHTML = `<div class="feed-empty"><p>311 DATA UNAVAILABLE</p></div>`;
+        return;
+    }
+
+    const totalFormatted = data.totalComplaints ? data.totalComplaints.toLocaleString() : '0';
+
+    let html = `
+        <div class="nyc-data-summary">
+            <div class="nyc-stat">
+                <span class="nyc-stat-value">${totalFormatted}</span>
+                <span class="nyc-stat-label">Total Requests (${data.period || 'Last 7 days'})</span>
+            </div>
+        </div>
+        <div class="nyc-311-grid">
+            <div class="nyc-311-section">
+                <h4 class="nyc-section-title">Top Complaint Types</h4>
+                <div class="nyc-311-list">
+    `;
+
+    data.topComplaintTypes.slice(0, 10).forEach((item, idx) => {
+        const pct = data.totalComplaints ? ((item.count / data.totalComplaints) * 100).toFixed(1) : 0;
+        html += `
+            <div class="nyc-311-item">
+                <span class="nyc-311-rank">${idx + 1}</span>
+                <span class="nyc-311-type">${escapeHtml(item.type)}</span>
+                <span class="nyc-311-count">${item.count.toLocaleString()}</span>
+                <span class="nyc-311-pct">${pct}%</span>
+            </div>
+        `;
+    });
+
+    html += `</div></div>`;
+
+    // Top agencies section
+    if (data.topAgencies && data.topAgencies.length > 0) {
+        html += `
+            <div class="nyc-311-section">
+                <h4 class="nyc-section-title">Top Responding Agencies</h4>
+                <div class="nyc-311-list">
+        `;
+
+        data.topAgencies.slice(0, 5).forEach((agency, idx) => {
+            html += `
+                <div class="nyc-311-item">
+                    <span class="nyc-311-rank">${idx + 1}</span>
+                    <span class="nyc-311-type">${escapeHtml(agency.agency)}</span>
+                    <span class="nyc-311-count">${agency.count.toLocaleString()}</span>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    }
+
+    html += `</div>`;
+
+    nyc311Container.innerHTML = html;
+}
+
+// Render City Council Legislation
+function renderLegislationData(data) {
+    if (!nycLegislationContainer) return;
+
+    if (data.error) {
+        nycLegislationContainer.innerHTML = `<div class="feed-empty"><p>LEGISLATION DATA UNAVAILABLE</p></div>`;
+        return;
+    }
+
+    let html = `<div class="nyc-legislation-grid">`;
+
+    // Local Laws section
+    if (data.localLaws && data.localLaws.length > 0) {
+        html += `
+            <div class="nyc-legislation-section">
+                <h4 class="nyc-section-title">Recent Local Laws</h4>
+                <div class="nyc-legislation-list">
+        `;
+
+        data.localLaws.slice(0, 8).forEach(law => {
+            html += `
+                <div class="nyc-legislation-item local-law">
+                    <div class="legislation-header">
+                        <span class="legislation-number">${escapeHtml(law.localLaw || law.introNumber)}</span>
+                        <span class="legislation-status enacted">ENACTED</span>
+                    </div>
+                    <div class="legislation-name">${escapeHtml(law.name)}</div>
+                    <div class="legislation-meta">
+                        ${law.sponsor ? `<span>Sponsor: ${escapeHtml(law.sponsor)}</span>` : ''}
+                        ${law.enactmentDate ? `<span>Enacted: ${escapeHtml(law.enactmentDate)}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    }
+
+    // Pending Bills section
+    if (data.pendingBills && data.pendingBills.length > 0) {
+        html += `
+            <div class="nyc-legislation-section">
+                <h4 class="nyc-section-title">Recent Bills</h4>
+                <div class="nyc-legislation-list">
+        `;
+
+        data.pendingBills.slice(0, 10).forEach(bill => {
+            const statusClass = (bill.status || '').toLowerCase().includes('enacted') ? 'enacted' :
+                               (bill.status || '').toLowerCase().includes('committee') ? 'committee' : 'pending';
+            html += `
+                <div class="nyc-legislation-item">
+                    <div class="legislation-header">
+                        <span class="legislation-number">${escapeHtml(bill.introNumber)}</span>
+                        <span class="legislation-status ${statusClass}">${escapeHtml(bill.status || 'PENDING')}</span>
+                    </div>
+                    <div class="legislation-name">${escapeHtml(bill.name)}</div>
+                    <div class="legislation-meta">
+                        ${bill.sponsor ? `<span>Sponsor: ${escapeHtml(bill.sponsor)}</span>` : ''}
+                        ${bill.introDate ? `<span>Introduced: ${escapeHtml(bill.introDate)}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    }
+
+    html += `</div>`;
+
+    nycLegislationContainer.innerHTML = html;
+}
+
+// Render NYC Budget Data
+function renderBudgetData(data) {
+    if (!nycBudgetContainer) return;
+
+    if (data.error || !data.items || data.items.length === 0) {
+        nycBudgetContainer.innerHTML = `<div class="feed-empty"><p>BUDGET DATA UNAVAILABLE</p></div>`;
+        return;
+    }
+
+    let html = `
+        <div class="nyc-data-summary">
+            <div class="nyc-stat">
+                <span class="nyc-stat-value">${escapeHtml(data.totalAdopted || '--')}</span>
+                <span class="nyc-stat-label">Total Adopted Budget</span>
+            </div>
+            <div class="nyc-stat">
+                <span class="nyc-stat-value">${escapeHtml(data.totalModified || '--')}</span>
+                <span class="nyc-stat-label">Modified Budget</span>
+            </div>
+            ${data.fiscalYear ? `<div class="nyc-stat"><span class="nyc-stat-value">FY${escapeHtml(data.fiscalYear)}</span><span class="nyc-stat-label">Fiscal Year</span></div>` : ''}
+        </div>
+        <div class="nyc-budget-grid">
+            <h4 class="nyc-section-title">Top Agency Budgets</h4>
+            <div class="nyc-budget-list">
+    `;
+
+    data.items.slice(0, 12).forEach((item, idx) => {
+        const changeClass = item.change && item.change.startsWith('+') ? 'positive' :
+                           item.change && item.change.startsWith('-') ? 'negative' : '';
+        html += `
+            <div class="nyc-budget-item">
+                <span class="nyc-budget-rank">${idx + 1}</span>
+                <div class="nyc-budget-info">
+                    <span class="nyc-budget-agency">${escapeHtml(item.agency)}</span>
+                    <span class="nyc-budget-categories">${item.topCategories ? item.topCategories.map(c => c.name).join(', ') : ''}</span>
+                </div>
+                <div class="nyc-budget-amounts">
+                    <span class="nyc-budget-adopted">${escapeHtml(item.adoptedBudget)}</span>
+                    <span class="nyc-budget-change ${changeClass}">${escapeHtml(item.change || '')}</span>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `</div></div>`;
+
+    nycBudgetContainer.innerHTML = html;
+}
+
+// Render Mayor's Management Report
+function renderMMRData(data) {
+    if (!nycMMRContainer) return;
+
+    if (data.error || !data.items || data.items.length === 0) {
+        nycMMRContainer.innerHTML = `<div class="feed-empty"><p>MMR DATA UNAVAILABLE</p></div>`;
+        return;
+    }
+
+    let html = `
+        <div class="nyc-data-summary">
+            <div class="nyc-stat">
+                <span class="nyc-stat-value">${data.count || 0}</span>
+                <span class="nyc-stat-label">Agencies Tracked</span>
+            </div>
+            <div class="nyc-stat">
+                <span class="nyc-stat-value">${data.totalRecords || 0}</span>
+                <span class="nyc-stat-label">Performance Indicators</span>
+            </div>
+        </div>
+        <div class="nyc-mmr-grid">
+            <h4 class="nyc-section-title">Agency Performance Metrics</h4>
+            <div class="nyc-mmr-list">
+    `;
+
+    data.items.slice(0, 10).forEach(agency => {
+        html += `
+            <div class="nyc-mmr-item">
+                <div class="nyc-mmr-header">
+                    <span class="nyc-mmr-agency">${escapeHtml(agency.agency)}</span>
+                    <span class="nyc-mmr-count">${agency.metricCount} indicators</span>
+                </div>
+                <div class="nyc-mmr-metrics">
+        `;
+
+        agency.metrics.slice(0, 3).forEach(metric => {
+            html += `
+                <div class="nyc-mmr-metric">
+                    <span class="metric-name">${escapeHtml(truncate(metric.indicator, 60))}</span>
+                    <span class="metric-value">${escapeHtml(metric.actual)}</span>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
+    });
+
+    html += `</div></div>`;
+
+    nycMMRContainer.innerHTML = html;
+}
 
 // ============================================
 // Contact Modal Functions

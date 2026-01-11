@@ -2029,3 +2029,477 @@ body::after{
   }
 }
 
+/* ============================================
+   NYC Open Data Section Styles
+   ============================================ */
+
+/* Section divider */
+.section-divider{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  margin: 30px 0 15px;
+  border-top: 2px solid var(--info);
+  border-bottom: 1px solid var(--line);
+}
+
+.section-title{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--info);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.section-source{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* NYC Panel styling */
+.nyc-panel{
+  border-color: rgba(87,199,255,0.3);
+}
+
+.nyc-panel .panel-title h2{
+  color: var(--info);
+}
+
+/* NYC Data Summary Stats */
+.nyc-data-summary{
+  display: flex;
+  gap: 30px;
+  padding: 15px 20px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.nyc-stat{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nyc-stat-value{
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--info);
+}
+
+.nyc-stat-label{
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* NYC Section Title */
+.nyc-section-title{
+  margin: 0 0 12px;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+}
+
+/* 311 Service Requests Styles */
+.nyc-311-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.nyc-311-section{
+  border-right: 1px solid var(--line);
+}
+
+.nyc-311-section:last-child{
+  border-right: none;
+}
+
+.nyc-311-list{
+  padding: 0;
+}
+
+.nyc-311-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.nyc-311-item:last-child{
+  border-bottom: none;
+}
+
+.nyc-311-item:hover{
+  background: rgba(87,199,255,0.05);
+}
+
+.nyc-311-rank{
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--info);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.nyc-311-type{
+  flex: 1;
+  color: var(--text);
+}
+
+.nyc-311-count{
+  font-weight: 600;
+  color: var(--info);
+  min-width: 60px;
+  text-align: right;
+}
+
+.nyc-311-pct{
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 45px;
+  text-align: right;
+}
+
+/* Legislation Styles */
+.nyc-legislation-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.nyc-legislation-section{
+  border-right: 1px solid var(--line);
+}
+
+.nyc-legislation-section:last-child{
+  border-right: none;
+}
+
+.nyc-legislation-list{
+  padding: 0;
+}
+
+.nyc-legislation-item{
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.nyc-legislation-item:last-child{
+  border-bottom: none;
+}
+
+.nyc-legislation-item:hover{
+  background: rgba(87,199,255,0.05);
+}
+
+.nyc-legislation-item.local-law{
+  background: rgba(0,176,80,0.05);
+}
+
+.legislation-header{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.legislation-number{
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--info);
+}
+
+.legislation-status{
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--line);
+  color: var(--muted);
+}
+
+.legislation-status.enacted{
+  background: rgba(0,176,80,0.2);
+  color: var(--up);
+}
+
+.legislation-status.committee{
+  background: rgba(255,176,0,0.2);
+  color: var(--amber);
+}
+
+.legislation-status.pending{
+  background: rgba(87,199,255,0.2);
+  color: var(--info);
+}
+
+.legislation-name{
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.legislation-meta{
+  display: flex;
+  gap: 15px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Budget Styles */
+.nyc-budget-grid{
+  padding: 0;
+}
+
+.nyc-budget-list{
+  padding: 0;
+}
+
+.nyc-budget-item{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.nyc-budget-item:last-child{
+  border-bottom: none;
+}
+
+.nyc-budget-item:hover{
+  background: rgba(87,199,255,0.05);
+}
+
+.nyc-budget-rank{
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--info);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.nyc-budget-info{
+  flex: 1;
+  min-width: 0;
+}
+
+.nyc-budget-agency{
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.nyc-budget-categories{
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nyc-budget-amounts{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.nyc-budget-adopted{
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--info);
+}
+
+.nyc-budget-change{
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.nyc-budget-change.positive{
+  color: var(--up);
+}
+
+.nyc-budget-change.negative{
+  color: var(--down);
+}
+
+/* MMR Styles */
+.nyc-mmr-grid{
+  padding: 0;
+}
+
+.nyc-mmr-list{
+  padding: 0;
+}
+
+.nyc-mmr-item{
+  padding: 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+.nyc-mmr-item:last-child{
+  border-bottom: none;
+}
+
+.nyc-mmr-item:hover{
+  background: rgba(87,199,255,0.05);
+}
+
+.nyc-mmr-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.nyc-mmr-agency{
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.nyc-mmr-count{
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.nyc-mmr-metrics{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nyc-mmr-metric{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--panel-2);
+  border-left: 2px solid var(--info);
+}
+
+.metric-name{
+  font-size: 12px;
+  color: var(--muted);
+  flex: 1;
+}
+
+.metric-value{
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--info);
+  margin-left: 15px;
+}
+
+/* NYC Open Data Mobile Responsive */
+@media (max-width: 768px){
+  .section-divider{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 15px 0;
+    margin: 20px 0 10px;
+  }
+
+  .section-title{
+    font-size: 14px;
+  }
+
+  .nyc-data-summary{
+    gap: 20px;
+    padding: 12px 15px;
+  }
+
+  .nyc-stat-value{
+    font-size: 20px;
+  }
+
+  .nyc-311-grid,
+  .nyc-legislation-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .nyc-311-section,
+  .nyc-legislation-section{
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nyc-311-section:last-child,
+  .nyc-legislation-section:last-child{
+    border-bottom: none;
+  }
+
+  .nyc-311-item{
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .nyc-311-type{
+    word-break: break-word;
+  }
+
+  .nyc-budget-item{
+    padding: 10px 12px;
+  }
+
+  .nyc-budget-agency{
+    font-size: 12px;
+  }
+
+  .legislation-name{
+    font-size: 12px;
+  }
+
+  .legislation-meta{
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nyc-mmr-header{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .nyc-mmr-metric{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .metric-value{
+    margin-left: 0;
+  }
+}
+

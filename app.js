@@ -614,24 +614,25 @@ function renderNews(data) {
     newsContainer.innerHTML = newsItems;
 }
 
-// Render trends section
+// Render trends section - only show if Mamdani-related trends exist
 function renderTrends(data) {
     if (!trendsContainer) return;
 
+    const trendsPanel = document.getElementById('trendsPanel');
     const mamdaniTrends = data.items || [];
-    const allTrends = data.allTrends || [];
 
-    // Show Mamdani-related trends if any, otherwise show top general trends
-    const trendsToShow = mamdaniTrends.length > 0 ? mamdaniTrends : allTrends.slice(0, 10);
-    const isFiltered = mamdaniTrends.length > 0;
-
-    if (trendsToShow.length === 0) {
-        trendsContainer.innerHTML = `
-            <div class="feed-empty">
-                <p>NO TRENDS AVAILABLE</p>
-            </div>
-        `;
+    // Only show the panel if there are Mamdani-related trends
+    if (mamdaniTrends.length === 0) {
+        // Hide the entire panel if no Mamdani trends
+        if (trendsPanel) {
+            trendsPanel.style.display = 'none';
+        }
         return;
+    }
+
+    // Show the panel since we have Mamdani trends
+    if (trendsPanel) {
+        trendsPanel.style.display = 'block';
     }
 
     const header = `
@@ -644,7 +645,7 @@ function renderTrends(data) {
         </div>
     `;
 
-    const rows = trendsToShow.map(trend => {
+    const rows = mamdaniTrends.map(trend => {
         const severity = trend.severity || determineTrendSeverity(trend.ranking);
         return `
             <div class="feed-row">
@@ -657,9 +658,7 @@ function renderTrends(data) {
         `;
     }).join('');
 
-    const subtitle = isFiltered
-        ? `<div class="feed-subtitle">Found ${mamdaniTrends.length} Mamdani-related trend(s)</div>`
-        : `<div class="feed-subtitle">Showing top trends (no Mamdani matches today)</div>`;
+    const subtitle = `<div class="feed-subtitle">Found ${mamdaniTrends.length} Mamdani-related trend(s)</div>`;
 
     trendsContainer.innerHTML = subtitle + header + rows;
 }

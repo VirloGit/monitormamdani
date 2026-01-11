@@ -1292,4 +1292,99 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ============================================
+// Changelog Modal Functions
+// ============================================
+
+let changelogLoaded = false;
+
+function openChangelogModal() {
+    const modal = document.getElementById('changelogModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.addEventListener('keydown', handleChangelogModalEscape);
+
+        // Load changelog if not already loaded
+        if (!changelogLoaded) {
+            fetchChangelog();
+        }
+    }
+}
+
+function closeChangelogModal() {
+    const modal = document.getElementById('changelogModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    document.removeEventListener('keydown', handleChangelogModalEscape);
+}
+
+function handleChangelogModalEscape(e) {
+    if (e.key === 'Escape') {
+        closeChangelogModal();
+    }
+}
+
+async function fetchChangelog() {
+    const body = document.getElementById('changelogModalBody');
+    if (!body) return;
+
+    try {
+        const response = await fetch('/api/changelog');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderChangelog(data);
+        changelogLoaded = true;
+
+    } catch (error) {
+        console.error('Error fetching changelog:', error);
+        body.innerHTML = `
+            <div class="changelog-error">
+                <p>Failed to load changelog</p>
+            </div>
+        `;
+    }
+}
+
+function renderChangelog(data) {
+    const body = document.getElementById('changelogModalBody');
+    if (!body) return;
+
+    const commits = data.commits || [];
+
+    if (commits.length === 0) {
+        body.innerHTML = `
+            <div class="changelog-empty">
+                <p>No changelog entries found</p>
+            </div>
+        `;
+        return;
+    }
+
+    const items = commits.map(commit => `
+        <div class="changelog-item">
+            <div class="changelog-item-header">
+                <span class="changelog-sha">${escapeHtml(commit.sha)}</span>
+                <span class="changelog-date">${escapeHtml(commit.date)}</span>
+            </div>
+            <div class="changelog-title">${escapeHtml(commit.title)}</div>
+            ${commit.body ? `<div class="changelog-body">${escapeHtml(commit.body)}</div>` : ''}
+        </div>
+    `).join('');
+
+    body.innerHTML = `
+        <div class="changelog-list">
+            ${items}
+        </div>
+        <div class="changelog-footer">
+            <a href="https://github.com/VirloGit/monitormamdani/commits/main" target="_blank" rel="noopener">
+                View all commits on GitHub
+            </a>
+        </div>
+    `;
+}
+
 // ShareThis handles share buttons - no custom code needed

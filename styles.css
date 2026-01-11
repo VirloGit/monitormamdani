@@ -1456,6 +1456,171 @@ body::after{
   .sidebar-markets{
     max-height: 350px;
   }
+
+  /* Container padding for mobile */
+  .container{
+    padding: 12px 12px 40px;
+  }
+
+  /* Hero mobile layout */
+  .hero-title{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .hero-logo{
+    width: 50px;
+    height: 50px;
+  }
+
+  .h1{
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .subline{
+    font-size: 14px;
+  }
+
+  .subline.built-by{
+    font-size: 12px;
+  }
+
+  /* Hero actions mobile */
+  .hero-actions{
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hero-btn{
+    font-size: 11px;
+    padding: 6px 12px;
+    height: 28px;
+  }
+
+  .sharethis-inline-share-buttons .st-btn{
+    height: 28px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+  }
+
+  /* Status and data update info mobile */
+  .status{
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .data-update-info{
+    font-size: 10px;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  /* Term countdown mobile */
+  .term-countdown{
+    padding: 12px;
+  }
+
+  .countdown-label{
+    font-size: 9px;
+  }
+
+  .countdown-timer{
+    font-size: 18px;
+    gap: 8px;
+  }
+
+  .countdown-unit small{
+    font-size: 8px;
+  }
+
+  .countdown-dates{
+    font-size: 9px;
+  }
+
+  /* Data sources mobile */
+  .data-sources{
+    gap: 8px;
+    font-size: 12px;
+    margin: 10px 0;
+  }
+
+  .data-sources a{
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* Panel titles mobile */
+  .panel-title{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .panel-title h2{
+    font-size: 13px;
+  }
+
+  .panel-title .meta{
+    font-size: 10px;
+  }
+
+  /* Feed items mobile */
+  .feed{
+    padding: 10px;
+  }
+
+  .item{
+    padding: 12px;
+  }
+
+  .item-title{
+    font-size: 13px;
+  }
+
+  .item-meta{
+    font-size: 10px;
+  }
+
+  /* Promises grid mobile */
+  .promises-grid{
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .promise-card{
+    padding: 12px;
+  }
+
+  .promise-header h3{
+    font-size: 13px;
+  }
+
+  /* Ticker bar mobile */
+  .ticker{
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .ticker > .track span{
+    padding: 0 20px;
+  }
+
+  /* Footer mobile */
+  .footer{
+    padding: 20px 12px;
+  }
+
+  .smallprint{
+    font-size: 11px;
+    line-height: 1.5;
+  }
 }
 
 /* Hero Actions - Contact & Share */
@@ -1665,5 +1830,100 @@ body::after{
 /* Hide form when success shows */
 #contactForm.hidden{
   display: none;
+}
+
+/* Mobile modal and extra small screen styles */
+@media (max-width: 480px){
+  /* Very small screens */
+  .h1{
+    font-size: 18px;
+  }
+
+  .hero-logo{
+    width: 45px;
+    height: 45px;
+  }
+
+  .countdown-timer{
+    font-size: 16px;
+    gap: 6px;
+  }
+
+  .countdown-unit{
+    padding: 4px 6px;
+  }
+
+  /* Contact modal mobile */
+  .contact-modal-content{
+    width: 95%;
+    margin: 10px;
+  }
+
+  .contact-modal-header{
+    padding: 12px 15px;
+  }
+
+  .contact-modal-header h3{
+    font-size: 14px;
+  }
+
+  .contact-modal-body{
+    padding: 15px;
+  }
+
+  .form-group input,
+  .form-group textarea{
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    padding: 12px;
+  }
+
+  /* Velocity modal mobile */
+  .velocity-modal-content{
+    width: 95%;
+    max-height: 85vh;
+    margin: 10px;
+  }
+
+  /* Sidebar on mobile */
+  .sidebar-header{
+    padding: 12px;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .sidebar-header h2{
+    font-size: 12px;
+  }
+
+  .sidebar-sources{
+    font-size: 10px;
+  }
+
+  /* Market cards mobile */
+  .market-card-compact{
+    padding: 10px;
+  }
+
+  .market-title-compact{
+    font-size: 12px;
+  }
+
+  .market-yes{
+    font-size: 14px;
+  }
+
+  /* Alerts mobile */
+  .alert-item{
+    padding: 10px;
+  }
+
+  .alert-title{
+    font-size: 13px;
+  }
+
+  .alert-meta{
+    font-size: 10px;
+  }
 }
 

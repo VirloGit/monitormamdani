@@ -9,8 +9,7 @@ export async function handler(event, context) {
         };
     }
 
-    // Note: User set this as BUTTDOWN_API (typo) in Netlify
-    const BUTTONDOWN_API_KEY = process.env.BUTTDOWN_API || process.env.BUTTONDOWN_API;
+    const BUTTONDOWN_API_KEY = process.env.BUTTDOWN_API;
 
     if (!BUTTONDOWN_API_KEY) {
         return {

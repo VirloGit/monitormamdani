@@ -1471,51 +1471,75 @@ function handleNotifyModalEscape(e) {
     }
 }
 
-// Handle notify form submission via Buttondown
-// Using hidden iframe to submit form while keeping user on page
+// Handle notify form submission via Buttondown API
 document.addEventListener('DOMContentLoaded', () => {
     const notifyForm = document.getElementById('notifyForm');
     if (notifyForm) {
-        // Create hidden iframe for form submission
-        const iframe = document.createElement('iframe');
-        iframe.name = 'buttondown-iframe';
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
+        notifyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        // Set form target to iframe
-        notifyForm.setAttribute('target', 'buttondown-iframe');
-
-        notifyForm.addEventListener('submit', (e) => {
             const submitBtn = document.getElementById('notifySubmitBtn');
             const success = document.getElementById('notifySuccess');
+            const emailInput = notifyForm.querySelector('input[name="email"]');
 
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Subscribing...';
             }
 
-            // Form submits naturally to iframe, show success after delay
-            setTimeout(() => {
-                notifyForm.classList.add('hidden');
-                if (success) {
-                    success.classList.add('active');
-                }
+            try {
+                // Collect tags from checkboxes
+                const tags = [];
+                const checkboxes = notifyForm.querySelectorAll('input[type="checkbox"]:checked');
+                checkboxes.forEach(cb => {
+                    if (cb.name && cb.name !== 'email') {
+                        tags.push(cb.name);
+                    }
+                });
 
-                // Auto-close modal after 2.5 seconds
-                setTimeout(() => {
-                    closeNotifyModal();
-                    // Reset form for next use
-                    notifyForm.reset();
-                    notifyForm.classList.remove('hidden');
+                const response = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: emailInput.value,
+                        tags: tags
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    notifyForm.classList.add('hidden');
                     if (success) {
-                        success.classList.remove('active');
+                        success.classList.add('active');
                     }
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Subscribe';
-                    }
-                }, 2500);
-            }, 1000);
+
+                    // Auto-close modal after 2.5 seconds
+                    setTimeout(() => {
+                        closeNotifyModal();
+                        // Reset form for next use
+                        notifyForm.reset();
+                        notifyForm.classList.remove('hidden');
+                        if (success) {
+                            success.classList.remove('active');
+                        }
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Subscribe';
+                        }
+                    }, 2500);
+                } else {
+                    throw new Error(data.error || 'Subscription failed');
+                }
+            } catch (error) {
+                alert('Failed to subscribe: ' + error.message);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Subscribe';
+                }
+            }
         });
     }
 });

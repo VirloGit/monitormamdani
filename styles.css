@@ -372,6 +372,9 @@ body::after{
   font-size: 18px;              /* 12px * 1.5 */
   color: var(--muted);
   white-space: nowrap;
+  margin-top: 10px;
+  justify-content: center;
+  width: 100%;
 }
 .live-dot{
   width: 12px;                  /* 8px * 1.5 */
@@ -1171,6 +1174,8 @@ body::after{
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 }
 
 /* Term Countdown */
@@ -1482,6 +1487,8 @@ body::after{
 /* Checkbox Styles for Notify Modal */
 .checkbox-group{
   margin-top: 15px;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .checkbox-label{
@@ -1503,11 +1510,15 @@ body::after{
   flex-shrink: 0;
   width: 18px;
   height: 18px;
+  min-width: 18px;
+  min-height: 18px;
   border: 2px solid var(--muted);
   background: transparent;
   position: relative;
   margin-top: 2px;
   transition: all 0.2s;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .checkbox-label input[type="checkbox"]:checked + .checkbox-custom{
@@ -1518,9 +1529,9 @@ body::after{
 .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after{
   content: '';
   position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 5px;
+  left: 4px;
+  top: 0px;
+  width: 6px;
   height: 10px;
   border: solid var(--bg);
   border-width: 0 2px 2px 0;

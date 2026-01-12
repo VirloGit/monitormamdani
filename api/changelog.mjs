@@ -25,11 +25,18 @@ export async function handler(event, context) {
         });
 
         if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status}`);
+            const errorText = await response.text();
+            console.error('GitHub API response:', response.status, errorText);
+            throw new Error(`GitHub API error: ${response.status} - repo may be private`);
         }
 
         const commits = await response.json();
         console.log('Commits received:', commits.length);
+
+        if (!Array.isArray(commits)) {
+            console.error('Unexpected response format:', commits);
+            throw new Error('Invalid response from GitHub');
+        }
 
         // Process and normalize commits
         const normalizedCommits = normalizeCommits(commits);
@@ -100,11 +107,10 @@ function cleanTitle(title) {
 }
 
 function isAutoCommit(title) {
-    // Filter out auto-generated or merge commits
+    // Filter out merge commits only
     const lower = title.toLowerCase();
     return lower.startsWith('merge pull request') ||
-           lower.startsWith('merge branch') ||
-           lower === 'initial commit';
+           lower.startsWith('merge branch');
 }
 
 function formatDate(dateStr) {

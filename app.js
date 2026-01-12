@@ -1472,34 +1472,30 @@ function handleNotifyModalEscape(e) {
 }
 
 // Handle notify form submission via Buttondown
+// Using hidden iframe to submit form while keeping user on page
 document.addEventListener('DOMContentLoaded', () => {
     const notifyForm = document.getElementById('notifyForm');
     if (notifyForm) {
-        notifyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Create hidden iframe for form submission
+        const iframe = document.createElement('iframe');
+        iframe.name = 'buttondown-iframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
 
+        // Set form target to iframe
+        notifyForm.setAttribute('target', 'buttondown-iframe');
+
+        notifyForm.addEventListener('submit', (e) => {
             const submitBtn = document.getElementById('notifySubmitBtn');
             const success = document.getElementById('notifySuccess');
-            const emailInput = document.getElementById('notifyEmail');
 
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Subscribing...';
             }
 
-            try {
-                // Build form data for Buttondown
-                const formData = new FormData(notifyForm);
-
-                // Submit to Buttondown API
-                const response = await fetch(notifyForm.action, {
-                    method: 'POST',
-                    body: formData,
-                    mode: 'no-cors' // Buttondown doesn't support CORS for embed forms
-                });
-
-                // Since we're using no-cors, we can't read the response
-                // Assume success if no error thrown
+            // Form submits naturally to iframe, show success after delay
+            setTimeout(() => {
                 notifyForm.classList.add('hidden');
                 if (success) {
                     success.classList.add('active');
@@ -1508,15 +1504,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Auto-close modal after 2.5 seconds
                 setTimeout(() => {
                     closeNotifyModal();
+                    // Reset form for next use
+                    notifyForm.reset();
+                    notifyForm.classList.remove('hidden');
+                    if (success) {
+                        success.classList.remove('active');
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Subscribe';
+                    }
                 }, 2500);
-
-            } catch (error) {
-                alert('Failed to subscribe. Please try again.');
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Subscribe';
-                }
-            }
+            }, 1000);
         });
     }
 });

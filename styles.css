@@ -1503,39 +1503,30 @@ body::after{
 }
 
 .checkbox-label input[type="checkbox"]{
-  display: none;
-}
-
-.checkbox-custom{
-  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
   width: 18px;
   height: 18px;
   min-width: 18px;
   min-height: 18px;
   border: 2px solid var(--muted);
   background: transparent;
-  position: relative;
-  margin-top: 2px;
-  transition: all 0.2s;
-  overflow: hidden;
-  box-sizing: border-box;
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkbox-custom{
+.checkbox-label input[type="checkbox"]:checked{
   border-color: var(--amber);
   background: var(--amber);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23050607'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after{
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 0px;
-  width: 6px;
-  height: 10px;
-  border: solid var(--bg);
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.checkbox-custom{
+  display: none;
 }
 
 .checkbox-text{
@@ -1552,6 +1543,10 @@ body::after{
   font-size: 11px;
   color: var(--muted);
   line-height: 1.4;
+}
+
+.checkbox-group + .checkbox-group{
+  margin-top: 18px;
 }
 
 @media (max-width: 768px){
@@ -1644,167 +1639,6 @@ body::after{
 
 .footer a:hover{
   text-decoration: underline;
-}
-
-/* Polymarket Panel */
-.polymarket-panel{
-  background: var(--panel);
-  border-color: rgba(87,199,255,0.3);
-}
-
-.markets-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 15px;
-  padding: 15px;
-}
-
-.market-card{
-  background: var(--panel-2);
-  border: 1px solid var(--line);
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: border-color 0.2s;
-}
-
-.market-card:hover{
-  border-color: var(--info);
-}
-
-.market-header{
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.market-image{
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border: 1px solid var(--line);
-  flex-shrink: 0;
-}
-
-.market-title{
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0;
-  line-height: 1.3;
-}
-
-.market-description{
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.4;
-  margin: 0;
-}
-
-.market-outcomes{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.market-outcome,
-.outcome-row{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--line);
-}
-
-.outcome-name{
-  font-size: 13px;
-  color: var(--text);
-}
-
-.outcome-price{
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.outcome-price.high{
-  color: var(--up);
-}
-
-.outcome-price.low{
-  color: var(--down);
-}
-
-.outcome-price.neutral{
-  color: var(--muted);
-}
-
-.market-stats{
-  display: flex;
-  gap: 16px;
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
-
-.market-stat{
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.market-stat-label{
-  color: var(--muted);
-}
-
-.market-stat-value{
-  color: var(--info);
-}
-
-.market-footer{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  gap: 12px;
-}
-
-.market-end{
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.market-link{
-  display: inline-block;
-  padding: 8px 16px;
-  background: rgba(87,199,255,0.1);
-  border: 1px solid rgba(87,199,255,0.3);
-  color: var(--info);
-  text-decoration: none;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-align: center;
-  transition: all 0.2s;
-  margin-left: auto;
-}
-
-.market-link:hover{
-  background: rgba(87,199,255,0.2);
-  border-color: var(--info);
-}
-
-.markets-empty{
-  padding: 60px 30px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
 }
 
 @media (max-width: 1200px){

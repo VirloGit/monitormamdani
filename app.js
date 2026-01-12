@@ -52,7 +52,6 @@ let fetchedData = {
 
 // Initialize the app
 function init() {
-    console.log('Monitor Mamdani initializing...');
     fetchAllData();
     startPolling();
 }
@@ -106,7 +105,7 @@ async function fetchAllData() {
         if (shouldFetchNYCData) {
             fetchNYCOpenData().then(() => {
                 lastNYCDataFetchTime = Date.now();
-            }).catch(err => console.error('NYC Open Data fetch error:', err));
+            }).catch(() => {});
         }
 
         // Check if at least some succeeded
@@ -127,7 +126,6 @@ async function fetchAllData() {
         isFirstLoad = false;
 
     } catch (error) {
-        console.error('Error fetching data:', error);
         updateStatus('ERROR', 'error');
     }
 }
@@ -153,7 +151,6 @@ async function fetchPromises() {
         return data;
 
     } catch (error) {
-        console.error('Error fetching promises:', error);
         if (promisesContainer && isFirstLoad) {
             promisesContainer.innerHTML = `<div class="feed-empty"><p>Platform unavailable</p></div>`;
         }
@@ -194,9 +191,7 @@ async function enrichPromisesWithMarketsAndVelocity(promises) {
         // Check promise completion after enrichment
         checkPromiseCompletion(promises);
     } catch (error) {
-        console.error('Error enriching promises:', error);
-        // Keep basic render, don't break
-        // Still try to check completion
+        // Keep basic render, still try to check completion
         checkPromiseCompletion(promises);
     }
 }
@@ -235,7 +230,6 @@ async function checkPromiseCompletion(promises) {
         updatePromisesTracker(data.completed, data.total, data.completedPromises);
 
     } catch (error) {
-        console.error('Error checking promise completion:', error);
         updatePromisesTracker(0, promises.length);
     }
 }
@@ -284,7 +278,6 @@ async function fetchNews() {
         return data;
 
     } catch (error) {
-        console.error('Error fetching news:', error);
         if (newsContainer && isFirstLoad) {
             newsContainer.innerHTML = `<div class="feed-empty"><p>News unavailable</p></div>`;
         }
@@ -306,7 +299,6 @@ async function fetchTrends() {
         return data;
 
     } catch (error) {
-        console.error('Error fetching trends:', error);
         if (trendsContainer && isFirstLoad) {
             trendsContainer.innerHTML = `<div class="feed-empty"><p>Trends unavailable</p></div>`;
         }
@@ -332,7 +324,6 @@ async function fetchVideos() {
         return data;
 
     } catch (error) {
-        console.error('Error fetching videos:', error);
         if (videosContainer && isFirstLoad) {
             videosContainer.innerHTML = `<div class="feed-empty"><p>Videos unavailable</p></div>`;
         }
@@ -355,7 +346,6 @@ async function fetchMarkets() {
         return data;
 
     } catch (error) {
-        console.error('Error fetching markets:', error);
         if (marketsContainer && isFirstLoad) {
             marketsContainer.innerHTML = `<div class="feed-empty"><p>Markets unavailable</p></div>`;
         }
@@ -378,8 +368,6 @@ async function fetchKalshiMarkets() {
         return data;
 
     } catch (error) {
-        console.error('Error fetching Kalshi markets:', error);
-        // Don't break if Kalshi fails - just log
         fetchedData.kalshiMarkets = [];
         throw error;
     }
@@ -414,7 +402,6 @@ async function generateAlerts() {
         renderAlerts(data.alerts || []);
 
     } catch (error) {
-        console.error('Error generating alerts:', error);
         alertsContainer.innerHTML = `
             <div class="feed-empty">
                 <p>ALERTS UNAVAILABLE</p>
@@ -845,22 +832,6 @@ function renderMarkets() {
     marketsContainer.innerHTML = items;
 }
 
-// Format percentage (0-1 to %)
-function formatPercent(value) {
-    if (value === null || value === undefined) return '--';
-    return Math.round(value * 100) + '%';
-}
-
-// Format date for display
-function formatDate(dateStr) {
-    try {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    } catch (e) {
-        return dateStr;
-    }
-}
-
 // Determine severity based on ranking
 function determineTrendSeverity(ranking) {
     if (ranking <= 3) return 'hot';
@@ -1020,8 +991,6 @@ window.addEventListener('beforeunload', () => {
 
 // Fetch all NYC Open Data endpoints
 async function fetchNYCOpenData() {
-    console.log('Fetching NYC Open Data...');
-
     // Fetch all NYC data in parallel
     const [data311, legislation, budget, mmr] = await Promise.allSettled([
         fetch('/api/nyc-311').then(r => r.json()),
@@ -1360,7 +1329,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Form submission failed');
                 }
             } catch (error) {
-                console.error('Contact form error:', error);
                 alert('Failed to send message. Please try again.');
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -1419,7 +1387,6 @@ async function fetchChangelog() {
         changelogLoaded = true;
 
     } catch (error) {
-        console.error('Error fetching changelog:', error);
         body.innerHTML = `
             <div class="changelog-error">
                 <p>Failed to load changelog</p>
@@ -1544,7 +1511,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 2500);
 
             } catch (error) {
-                console.error('Notify form error:', error);
                 alert('Failed to subscribe. Please try again.');
                 if (submitBtn) {
                     submitBtn.disabled = false;

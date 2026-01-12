@@ -167,7 +167,7 @@ function normalizeCometData(cometData) {
             severity: determineSeverity(item),
             title: item.title || item.caption || item.description || 'Untitled',
             metric: formatMetric(item),
-            source: item.platform || item.source || 'Social Media',
+            source: extractPlatform(item),
             url: item.url || item.link || item.videoUrl || item.video_url || ''
         };
     });
@@ -249,4 +249,58 @@ function formatNumber(num) {
         return (num / 1000).toFixed(1) + 'K';
     }
     return num.toString();
+}
+
+// Extract platform from item data
+function extractPlatform(item) {
+    // Check explicit platform fields first
+    if (item.platform) return normalizePlatformName(item.platform);
+    if (item.source) return normalizePlatformName(item.source);
+    if (item.network) return normalizePlatformName(item.network);
+    if (item.site) return normalizePlatformName(item.site);
+    if (item.provider) return normalizePlatformName(item.provider);
+    if (item.socialNetwork) return normalizePlatformName(item.socialNetwork);
+    if (item.social_network) return normalizePlatformName(item.social_network);
+    if (item.channel) return normalizePlatformName(item.channel);
+
+    // Try to detect from URL
+    const url = item.url || item.link || item.videoUrl || item.video_url || '';
+    if (url) {
+        const urlLower = url.toLowerCase();
+        if (urlLower.includes('tiktok.com')) return 'TikTok';
+        if (urlLower.includes('youtube.com') || urlLower.includes('youtu.be')) return 'YouTube';
+        if (urlLower.includes('instagram.com')) return 'Instagram';
+        if (urlLower.includes('twitter.com') || urlLower.includes('x.com')) return 'X';
+        if (urlLower.includes('facebook.com') || urlLower.includes('fb.watch')) return 'Facebook';
+        if (urlLower.includes('reddit.com')) return 'Reddit';
+        if (urlLower.includes('threads.net')) return 'Threads';
+        if (urlLower.includes('linkedin.com')) return 'LinkedIn';
+        if (urlLower.includes('snapchat.com')) return 'Snapchat';
+        if (urlLower.includes('twitch.tv')) return 'Twitch';
+    }
+
+    return 'Social Media';
+}
+
+// Normalize platform name for consistent display
+function normalizePlatformName(name) {
+    if (!name) return 'Social Media';
+    const lower = name.toLowerCase().trim();
+
+    const platformMap = {
+        'tiktok': 'TikTok',
+        'youtube': 'YouTube',
+        'instagram': 'Instagram',
+        'twitter': 'X',
+        'x': 'X',
+        'facebook': 'Facebook',
+        'fb': 'Facebook',
+        'reddit': 'Reddit',
+        'threads': 'Threads',
+        'linkedin': 'LinkedIn',
+        'snapchat': 'Snapchat',
+        'twitch': 'Twitch'
+    };
+
+    return platformMap[lower] || name;
 }

@@ -1474,6 +1474,64 @@ body::after{
   display: none;
 }
 
+/* Checkbox Styles for Notify Modal */
+.checkbox-group{
+  margin-top: 15px;
+}
+
+.checkbox-label{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.checkbox-label input[type="checkbox"]{
+  display: none;
+}
+
+.checkbox-custom{
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--muted);
+  background: transparent;
+  position: relative;
+  margin-top: 2px;
+  transition: all 0.2s;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom{
+  border-color: var(--amber);
+  background: var(--amber);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after{
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-text{
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.checkbox-description{
+  margin: 5px 0 0 28px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 @media (max-width: 768px){
   .hero-top{
     flex-direction: column;

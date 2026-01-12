@@ -393,13 +393,29 @@
                 <button class="notify-modal-close" onclick="closeNotifyModal()">&times;</button>
             </div>
             <div class="notify-modal-body">
-                <p class="notify-description">We will send automated emails when there are major developments regarding Zohran Mamdani and product updates.</p>
+                <p class="notify-description">Get notified when there are major developments regarding Zohran Mamdani.</p>
                 <form id="notifyForm" action="https://formspree.io/f/mjgknlwn" method="POST">
                     <input type="hidden" name="subject" value="Newsletter Signup - Monitor Mamdani">
                     <input type="hidden" name="type" value="newsletter">
                     <div class="form-group">
                         <label for="notifyEmail">Email Address</label>
                         <input type="email" id="notifyEmail" name="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="weekly_newsletter" value="yes" id="weeklyNewsletter" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Subscribe to weekly "Informed on Zohran" digest</span>
+                        </label>
+                        <p class="checkbox-description">A bullet-point summary of Notable Alerts from the past week, delivered every Sunday.</p>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="breaking_alerts" value="yes" id="breakingAlerts" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Breaking alerts for major developments</span>
+                        </label>
+                        <p class="checkbox-description">Instant notifications for significant news, legislation, or viral content.</p>
                     </div>
                     <button type="submit" class="notify-submit-btn" id="notifySubmitBtn">Subscribe</button>
                 </form>

@@ -1166,12 +1166,21 @@ body::after{
   color: var(--info);
 }
 
+/* Hero Stats Row - Container for countdown and tracker */
+.hero-stats-row{
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
 /* Term Countdown */
 .term-countdown{
   text-align: center;
   padding: 10px 20px;
   background: var(--panel-2);
   border: 1px solid var(--line-2);
+  flex: 1;
+  min-width: 200px;
 }
 
 .countdown-label{
@@ -1209,6 +1218,70 @@ body::after{
   margin-top: 6px;
 }
 
+/* Promises Completion Tracker */
+.promises-tracker{
+  text-align: center;
+  padding: 10px 20px;
+  background: var(--panel-2);
+  border: 1px solid rgba(0, 176, 80, 0.4);
+  flex: 1;
+  min-width: 200px;
+}
+
+.tracker-label{
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.tracker-count{
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  font-family: var(--font);
+}
+
+.tracker-completed{
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--up);
+}
+
+.tracker-separator{
+  font-size: 20px;
+  color: var(--muted);
+}
+
+.tracker-total{
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.tracker-progress{
+  height: 4px;
+  background: var(--line);
+  margin: 8px 0 6px;
+  overflow: hidden;
+}
+
+.tracker-progress-bar{
+  height: 100%;
+  background: var(--up);
+  transition: width 0.5s ease-out;
+}
+
+.tracker-status{
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.tracker-status.verified{
+  color: var(--up);
+}
+
 @media (max-width: 768px){
   .hero-top{
     flex-direction: column;
@@ -1216,9 +1289,15 @@ body::after{
     align-items: flex-start;
   }
 
-  .term-countdown{
+  .hero-stats-row{
     width: 100%;
     order: 2;
+    flex-direction: column;
+  }
+
+  .term-countdown,
+  .promises-tracker{
+    width: 100%;
   }
 
   .status{
@@ -2686,6 +2765,82 @@ body::after{
 
   .changelog-title{
     font-size: 13px;
+  }
+}
+
+/* ============================================
+   Section Navigation Bar
+   ============================================ */
+
+.section-nav{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--amber);
+}
+
+.section-nav .nav-link{
+  display: inline-block;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  transition: all 0.2s;
+}
+
+.section-nav .nav-link:hover{
+  color: var(--amber);
+  border-color: var(--amber);
+  background: rgba(255, 176, 0, 0.08);
+}
+
+.section-nav .nav-link:active{
+  transform: translateY(1px);
+}
+
+/* Smooth scroll behavior */
+html{
+  scroll-behavior: smooth;
+}
+
+/* Offset for sticky header when scrolling to anchors */
+[id]{
+  scroll-margin-top: 60px;
+}
+
+/* Section Nav Mobile */
+@media (max-width: 768px){
+  .section-nav{
+    padding: 12px;
+    gap: 6px;
+    margin: 10px 0;
+  }
+
+  .section-nav .nav-link{
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px){
+  .section-nav{
+    padding: 10px;
+    gap: 5px;
+  }
+
+  .section-nav .nav-link{
+    padding: 5px 8px;
+    font-size: 10px;
+    letter-spacing: 0.3px;
   }
 }
 

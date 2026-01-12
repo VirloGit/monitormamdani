@@ -76,17 +76,34 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Term Countdown -->
-                        <div class="term-countdown" id="termCountdown">
-                            <div class="countdown-label">TIME REMAINING IN TERM</div>
-                            <div class="countdown-timer" id="countdownTimer">
-                                <span class="countdown-unit"><span id="countdownYears">0</span><small>Y</small></span>
-                                <span class="countdown-unit"><span id="countdownDays">0</span><small>D</small></span>
-                                <span class="countdown-unit"><span id="countdownHours">00</span><small>H</small></span>
-                                <span class="countdown-unit"><span id="countdownMinutes">00</span><small>M</small></span>
-                                <span class="countdown-unit"><span id="countdownSeconds">00</span><small>S</small></span>
+                        <!-- Stats Boxes Container -->
+                        <div class="hero-stats-row">
+                            <!-- Term Countdown -->
+                            <div class="term-countdown" id="termCountdown">
+                                <div class="countdown-label">TIME REMAINING IN TERM</div>
+                                <div class="countdown-timer" id="countdownTimer">
+                                    <span class="countdown-unit"><span id="countdownYears">0</span><small>Y</small></span>
+                                    <span class="countdown-unit"><span id="countdownDays">0</span><small>D</small></span>
+                                    <span class="countdown-unit"><span id="countdownHours">00</span><small>H</small></span>
+                                    <span class="countdown-unit"><span id="countdownMinutes">00</span><small>M</small></span>
+                                    <span class="countdown-unit"><span id="countdownSeconds">00</span><small>S</small></span>
+                                </div>
+                                <div class="countdown-dates">Jan 1, 2026 - Jan 1, 2030</div>
                             </div>
-                            <div class="countdown-dates">Jan 1, 2026 - Jan 1, 2030</div>
+
+                            <!-- Promises Completed Tracker -->
+                            <div class="promises-tracker" id="promisesTracker">
+                                <div class="tracker-label">CAMPAIGN PROMISES COMPLETED</div>
+                                <div class="tracker-count">
+                                    <span class="tracker-completed" id="promisesCompleted">0</span>
+                                    <span class="tracker-separator">/</span>
+                                    <span class="tracker-total" id="promisesTotal">0</span>
+                                </div>
+                                <div class="tracker-progress">
+                                    <div class="tracker-progress-bar" id="promisesProgressBar" style="width: 0%"></div>
+                                </div>
+                                <div class="tracker-status" id="promisesStatus">Analyzing...</div>
+                            </div>
                         </div>
                         <div class="status">
                             <span class="live-dot"></span>
@@ -106,8 +123,21 @@
                     </div>
                 </div>
 
+                <!-- Section Navigation Bar -->
+                <nav class="section-nav" id="sectionNav">
+                    <a href="#promisesPanel" class="nav-link">Platform</a>
+                    <a href="#alertsPanel" class="nav-link">Alerts</a>
+                    <a href="#videosPanel" class="nav-link">Videos</a>
+                    <a href="#newsPanel" class="nav-link">News</a>
+                    <a href="#nyc311Panel" class="nav-link">311 Requests</a>
+                    <a href="#nycLegislationPanel" class="nav-link">Legislation</a>
+                    <a href="#nycBudgetPanel" class="nav-link">Budget</a>
+                    <a href="#nycMMRPanel" class="nav-link">MMR</a>
+                    <a href="#marketsSidebar" class="nav-link">Markets</a>
+                </nav>
+
                 <!-- Campaign Promises Panel -->
-                <div class="panel promises-panel">
+                <div class="panel promises-panel" id="promisesPanel">
                     <div class="panel-title">
                         <h2>Campaign Platform</h2>
                         <span class="meta"><a href="https://www.zohranfornyc.com/platform" target="_blank">zohranfornyc.com/platform</a></span>
@@ -122,7 +152,7 @@
                 </div>
 
                 <!-- Notable Alerts Panel -->
-                <div class="panel alerts-panel">
+                <div class="panel alerts-panel" id="alertsPanel">
                     <div class="panel-title">
                         <h2>Notable Alerts</h2>
                         <span class="meta">Live Monitoring Across Campaign Promises, Short-Form Content, and General News & Prediction Markets to Identify Trend Movement</span>
@@ -137,7 +167,7 @@
                 </div>
 
                 <!-- Videos Panel -->
-                <div class="panel">
+                <div class="panel" id="videosPanel">
                     <div class="panel-title">
                         <h2>Mamdani Videos</h2>
                         <span class="meta">Virlo Comet | Auto-refresh: 24hr</span>
@@ -152,7 +182,7 @@
                 </div>
 
                 <!-- News Panel (Firecrawl) -->
-                <div class="panel">
+                <div class="panel" id="newsPanel">
                     <div class="panel-title">
                         <h2>Latest News</h2>
                         <span class="meta">Firecrawl Search | Auto-refresh: 1hr</span>
@@ -188,7 +218,7 @@
                 </div>
 
                 <!-- 311 Service Requests Panel -->
-                <div class="panel nyc-panel">
+                <div class="panel nyc-panel" id="nyc311Panel">
                     <div class="panel-title">
                         <h2>311 Service Requests</h2>
                         <span class="meta">Last 7 Days | NYC Open Data</span>
@@ -203,7 +233,7 @@
                 </div>
 
                 <!-- City Council Legislation Panel -->
-                <div class="panel nyc-panel">
+                <div class="panel nyc-panel" id="nycLegislationPanel">
                     <div class="panel-title">
                         <h2>City Council Legislation</h2>
                         <span class="meta">Bills & Local Laws | NYC Open Data</span>
@@ -218,7 +248,7 @@
                 </div>
 
                 <!-- NYC Expense Budget Panel -->
-                <div class="panel nyc-panel">
+                <div class="panel nyc-panel" id="nycBudgetPanel">
                     <div class="panel-title">
                         <h2>NYC Expense Budget</h2>
                         <span class="meta">Agency Budgets | NYC Open Data</span>
@@ -233,7 +263,7 @@
                 </div>
 
                 <!-- Mayor's Management Report Panel -->
-                <div class="panel nyc-panel">
+                <div class="panel nyc-panel" id="nycMMRPanel">
                     <div class="panel-title">
                         <h2>Mayor's Management Report</h2>
                         <span class="meta">Agency Performance | NYC Open Data</span>

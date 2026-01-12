@@ -35,6 +35,12 @@ const nycLegislationContainer = document.getElementById('nycLegislationContainer
 const nycBudgetContainer = document.getElementById('nycBudgetContainer');
 const nycMMRContainer = document.getElementById('nycMMRContainer');
 
+// Promises Tracker DOM Elements
+const promisesCompletedEl = document.getElementById('promisesCompleted');
+const promisesTotalEl = document.getElementById('promisesTotal');
+const promisesProgressBarEl = document.getElementById('promisesProgressBar');
+const promisesStatusEl = document.getElementById('promisesStatus');
+
 // Store fetched data for alerts generation
 let fetchedData = {
     videos: [],
@@ -184,10 +190,83 @@ async function enrichPromisesWithMarketsAndVelocity(promises) {
         if (data.enrichedPromises && data.enrichedPromises.length > 0) {
             renderEnrichedPromises(data.enrichedPromises);
         }
+
+        // Check promise completion after enrichment
+        checkPromiseCompletion(promises);
     } catch (error) {
         console.error('Error enriching promises:', error);
         // Keep basic render, don't break
+        // Still try to check completion
+        checkPromiseCompletion(promises);
     }
+}
+
+// Check which campaign promises are completed based on news and video evidence
+async function checkPromiseCompletion(promises) {
+    if (!promises || promises.length === 0) {
+        updatePromisesTracker(0, 0);
+        return;
+    }
+
+    // Update total immediately
+    if (promisesTotalEl) {
+        promisesTotalEl.textContent = promises.length;
+    }
+    if (promisesStatusEl) {
+        promisesStatusEl.textContent = 'Scanning news & videos...';
+    }
+
+    try {
+        const response = await fetch('/api/promise-completion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                promises: promises,
+                news: fetchedData.news,
+                videos: fetchedData.videos
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        updatePromisesTracker(data.completed, data.total, data.completedPromises);
+
+    } catch (error) {
+        console.error('Error checking promise completion:', error);
+        updatePromisesTracker(0, promises.length);
+    }
+}
+
+// Update the promises tracker UI
+function updatePromisesTracker(completed, total, completedPromises = []) {
+    if (promisesCompletedEl) {
+        promisesCompletedEl.textContent = completed;
+    }
+    if (promisesTotalEl) {
+        promisesTotalEl.textContent = total;
+    }
+    if (promisesProgressBarEl) {
+        const percentage = total > 0 ? (completed / total) * 100 : 0;
+        promisesProgressBarEl.style.width = `${percentage}%`;
+    }
+    if (promisesStatusEl) {
+        if (completed === 0 && total > 0) {
+            promisesStatusEl.textContent = 'No completions verified yet';
+            promisesStatusEl.classList.remove('verified');
+        } else if (completed > 0) {
+            promisesStatusEl.textContent = `${completed} verified via news/content`;
+            promisesStatusEl.classList.add('verified');
+        } else {
+            promisesStatusEl.textContent = 'Awaiting data...';
+            promisesStatusEl.classList.remove('verified');
+        }
+    }
+
+    // Store completed promises for potential display elsewhere
+    window.completedPromisesData = completedPromises;
 }
 
 // Fetch news from /api/firecrawl-search

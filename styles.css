@@ -1400,6 +1400,11 @@ body::after{
 
 .notify-modal-body{
   padding: 20px;
+  overflow: hidden;
+}
+
+#notifyForm{
+  overflow: hidden;
 }
 
 .notify-description{
@@ -1486,6 +1491,8 @@ body::after{
   cursor: pointer;
   font-size: 14px;
   color: var(--text);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .checkbox-label input[type="checkbox"]{
@@ -1523,6 +1530,10 @@ body::after{
 .checkbox-text{
   font-weight: 500;
   line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  flex: 1;
+  min-width: 0;
 }
 
 .checkbox-description{

@@ -1504,7 +1504,7 @@ function handleNotifyModalEscape(e) {
     }
 }
 
-// Handle notify form submission via Formspree
+// Handle notify form submission via Buttondown
 document.addEventListener('DOMContentLoaded', () => {
     const notifyForm = document.getElementById('notifyForm');
     if (notifyForm) {
@@ -1513,6 +1513,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const submitBtn = document.getElementById('notifySubmitBtn');
             const success = document.getElementById('notifySuccess');
+            const emailInput = document.getElementById('notifyEmail');
 
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -1520,29 +1521,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                // Build form data for Buttondown
                 const formData = new FormData(notifyForm);
+
+                // Submit to Buttondown API
                 const response = await fetch(notifyForm.action, {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    mode: 'no-cors' // Buttondown doesn't support CORS for embed forms
                 });
 
-                if (response.ok) {
-                    // Show success message
-                    notifyForm.classList.add('hidden');
-                    if (success) {
-                        success.classList.add('active');
-                    }
-
-                    // Auto-close modal after 2.5 seconds
-                    setTimeout(() => {
-                        closeNotifyModal();
-                    }, 2500);
-                } else {
-                    throw new Error('Form submission failed');
+                // Since we're using no-cors, we can't read the response
+                // Assume success if no error thrown
+                notifyForm.classList.add('hidden');
+                if (success) {
+                    success.classList.add('active');
                 }
+
+                // Auto-close modal after 2.5 seconds
+                setTimeout(() => {
+                    closeNotifyModal();
+                }, 2500);
+
             } catch (error) {
                 console.error('Notify form error:', error);
                 alert('Failed to subscribe. Please try again.');

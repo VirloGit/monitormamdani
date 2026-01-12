@@ -1,9 +1,9 @@
 // Netlify Serverless Function for NYC Mayor's Management Report
 // Endpoint: GET /api/nyc-mmr
-// Data source: https://data.cityofnewyork.us/resource/2jrp-puwz.json
+// Data source: https://data.cityofnewyork.us/resource/rbed-zzin.json (Agency Performance Indicators)
 
 const NYC_OPEN_DATA_BASE = 'https://data.cityofnewyork.us/resource';
-const MMR_DATASET_ID = '2jrp-puwz';
+const MMR_DATASET_ID = 'rbed-zzin';
 
 export async function handler(event, context) {
     if (event.httpMethod !== 'GET') {
@@ -16,8 +16,8 @@ export async function handler(event, context) {
     try {
         console.log('Fetching NYC Mayor Management Report data...');
 
-        // Fetch latest MMR data - limit to recent fiscal years
-        const url = `${NYC_OPEN_DATA_BASE}/${MMR_DATASET_ID}.json?$limit=100&$order=fiscal_year DESC`;
+        // Fetch latest MMR data - limit to recent fiscal years, exclude retired indicators
+        const url = `${NYC_OPEN_DATA_BASE}/${MMR_DATASET_ID}.json?$limit=200&$order=fiscalyear DESC&$where=retired='No'`;
 
         const response = await fetch(url, {
             headers: {
@@ -68,25 +68,35 @@ function normalizeMMRData(data) {
 
     data.forEach(record => {
         const agency = record.agency_name || record.agency || 'Unknown Agency';
-        const indicator = record.indicator_name || record.indicator || '';
-        const fiscalYear = record.fiscal_year || '';
-        const actual = record.actual || record.value || '';
-        const target = record.target || '';
+        const indicator = record.indicator || record.indicator_name || '';
+        const fiscalYear = record.fiscalyear || record.fiscal_year || '';
+        const actual = record.acceptedvalue || record.acceptedvalueytd || record.actual || record.value || '';
+        const target = record.targetmmr || record.target || '';
+        const goal = record.goal || '';
+        const service = record.service || '';
 
         if (!agencyMetrics[agency]) {
             agencyMetrics[agency] = {
                 agency,
                 metrics: [],
-                fiscalYear
+                fiscalYear,
+                goals: new Set()
             };
         }
 
-        if (indicator && actual) {
+        // Track unique goals
+        if (goal) {
+            agencyMetrics[agency].goals.add(goal);
+        }
+
+        // Only add metrics with actual values (not 'NA')
+        if (indicator && actual && actual !== 'NA') {
             agencyMetrics[agency].metrics.push({
                 indicator,
                 actual,
-                target,
-                fiscalYear
+                target: target || 'N/A',
+                fiscalYear,
+                service
             });
         }
     });
@@ -97,9 +107,11 @@ function normalizeMMRData(data) {
             agency: agency.agency,
             fiscalYear: agency.fiscalYear,
             metrics: agency.metrics.slice(0, 5), // Top 5 metrics per agency
-            metricCount: agency.metrics.length
+            metricCount: agency.metrics.length,
+            goalCount: agency.goals.size
         }))
         .filter(agency => agency.metrics.length > 0)
+        .sort((a, b) => b.metricCount - a.metricCount) // Sort by number of metrics
         .slice(0, 15); // Top 15 agencies
 
     return {

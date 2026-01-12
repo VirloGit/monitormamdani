@@ -70,9 +70,10 @@ function normalizeBudgetData(data) {
     data.forEach(record => {
         const agency = record.agency_name || record.agency || 'Unknown';
         const fiscalYear = record.fiscal_year || record.publication_date || '';
-        const adopted = parseFloat(record.adopted_budget || record.adopted || 0);
-        const modified = parseFloat(record.current_modified_budget || record.modified || 0);
-        const budgetCode = record.budget_code_name || record.budget_code || '';
+        // Handle different field naming conventions from NYC Open Data
+        const adopted = parseFloat(record.adopted_budget_amount || record.adopted_budget || record.adopted || 0);
+        const modified = parseFloat(record.current_modified_budget_amount || record.current_modified_budget || record.modified || 0);
+        const budgetCode = record.budget_code_name || record.unit_appropriation_name || record.budget_code || '';
 
         if (!latestFiscalYear || fiscalYear > latestFiscalYear) {
             latestFiscalYear = fiscalYear;

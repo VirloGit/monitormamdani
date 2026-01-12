@@ -1282,6 +1282,198 @@ body::after{
   color: var(--up);
 }
 
+/* Keep Me Informed Box */
+.notify-box{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background: var(--panel-2);
+  border: 1px solid var(--amber);
+  flex: 0 0 auto;
+  min-width: 140px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notify-box:hover{
+  background: rgba(255, 176, 0, 0.1);
+  border-color: var(--amber);
+  transform: scale(1.02);
+}
+
+.notify-bell{
+  color: var(--amber);
+  margin-bottom: 4px;
+  animation: ring 2s ease-in-out infinite;
+}
+
+.notify-bell svg{
+  width: 36px;
+  height: 36px;
+}
+
+@keyframes ring{
+  0%, 100%{ transform: rotate(0deg); }
+  5%{ transform: rotate(15deg); }
+  10%{ transform: rotate(-15deg); }
+  15%{ transform: rotate(10deg); }
+  20%{ transform: rotate(-10deg); }
+  25%{ transform: rotate(0deg); }
+}
+
+.notify-label{
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* Notify Modal */
+.notify-modal{
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.notify-modal.active{
+  display: flex;
+}
+
+.notify-modal-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.notify-modal-content{
+  position: relative;
+  width: 90%;
+  max-width: 420px;
+  background: var(--panel);
+  border: 1px solid var(--amber);
+  box-shadow: 0 0 40px rgba(255, 176, 0, 0.2);
+}
+
+.notify-modal-header{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
+}
+
+.notify-modal-bell{
+  color: var(--amber);
+}
+
+.notify-modal-header h3{
+  margin: 0;
+  flex: 1;
+  font-size: 18px;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.notify-modal-close{
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.notify-modal-close:hover{
+  color: var(--text);
+}
+
+.notify-modal-body{
+  padding: 20px;
+}
+
+.notify-description{
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.notify-submit-btn{
+  width: 100%;
+  padding: 14px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--amber);
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notify-submit-btn:hover{
+  background: var(--amber-2);
+}
+
+.notify-submit-btn:disabled{
+  background: var(--muted);
+  cursor: not-allowed;
+}
+
+/* Notify Success */
+.notify-success{
+  display: none;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.notify-success.active{
+  display: block;
+}
+
+.notify-success-icon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  color: var(--bg);
+  background: var(--up);
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+.notify-success p{
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.notify-success-sub{
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Hide form when success shows */
+#notifyForm.hidden{
+  display: none;
+}
+
 @media (max-width: 768px){
   .hero-top{
     flex-direction: column;
@@ -1296,13 +1488,48 @@ body::after{
   }
 
   .term-countdown,
-  .promises-tracker{
+  .promises-tracker,
+  .notify-box{
     width: 100%;
+  }
+
+  .notify-box{
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 20px;
+  }
+
+  .notify-bell{
+    margin-bottom: 0;
   }
 
   .status{
     order: 1;
     align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px){
+  .notify-modal-content{
+    width: 95%;
+    margin: 10px;
+  }
+
+  .notify-modal-header{
+    padding: 15px;
+  }
+
+  .notify-modal-header h3{
+    font-size: 16px;
+  }
+
+  .notify-modal-body{
+    padding: 15px;
+  }
+
+  .notify-description{
+    font-size: 13px;
   }
 }
 

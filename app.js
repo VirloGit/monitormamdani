@@ -1466,4 +1466,93 @@ function renderChangelog(data) {
     `;
 }
 
+// ============================================
+// Notify Modal Functions
+// ============================================
+
+function openNotifyModal() {
+    const modal = document.getElementById('notifyModal');
+    const form = document.getElementById('notifyForm');
+    const success = document.getElementById('notifySuccess');
+
+    if (modal) {
+        // Reset state
+        if (form) {
+            form.classList.remove('hidden');
+            form.reset();
+        }
+        if (success) {
+            success.classList.remove('active');
+        }
+
+        modal.classList.add('active');
+        document.addEventListener('keydown', handleNotifyModalEscape);
+    }
+}
+
+function closeNotifyModal() {
+    const modal = document.getElementById('notifyModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    document.removeEventListener('keydown', handleNotifyModalEscape);
+}
+
+function handleNotifyModalEscape(e) {
+    if (e.key === 'Escape') {
+        closeNotifyModal();
+    }
+}
+
+// Handle notify form submission via Formspree
+document.addEventListener('DOMContentLoaded', () => {
+    const notifyForm = document.getElementById('notifyForm');
+    if (notifyForm) {
+        notifyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('notifySubmitBtn');
+            const success = document.getElementById('notifySuccess');
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Subscribing...';
+            }
+
+            try {
+                const formData = new FormData(notifyForm);
+                const response = await fetch(notifyForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Show success message
+                    notifyForm.classList.add('hidden');
+                    if (success) {
+                        success.classList.add('active');
+                    }
+
+                    // Auto-close modal after 2.5 seconds
+                    setTimeout(() => {
+                        closeNotifyModal();
+                    }, 2500);
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                console.error('Notify form error:', error);
+                alert('Failed to subscribe. Please try again.');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Subscribe';
+                }
+            }
+        });
+    }
+});
+
 // ShareThis handles share buttons - no custom code needed

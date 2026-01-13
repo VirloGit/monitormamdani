@@ -10,11 +10,11 @@ export async function handler(event, context) {
         };
     }
 
-    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPBASE_URL = process.env.SUPBASE_URL;
     const SUPABASE_KEY = process.env.SUPABASE_KEY;
     const BUTTONDOWN_API_KEY = process.env.BUTTDOWN_API;
 
-    if (!SUPABASE_URL || !SUPABASE_KEY || !BUTTONDOWN_API_KEY) {
+    if (!SUPBASE_URL || !SUPABASE_KEY || !BUTTONDOWN_API_KEY) {
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Required credentials not configured' })
@@ -42,7 +42,7 @@ export async function handler(event, context) {
 
         // Fetch unsent alerts from last week (Mon-Fri)
         const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/notable_alerts?sent_in_digest=eq.false&created_at=gte.${lastMonday.toISOString()}&created_at=lte.${lastFriday.toISOString()}&order=created_at.desc`,
+            `${SUPBASE_URL}/rest/v1/notable_alerts?sent_in_digest=eq.false&created_at=gte.${lastMonday.toISOString()}&created_at=lte.${lastFriday.toISOString()}&order=created_at.desc`,
             {
                 headers: {
                     'apikey': SUPABASE_KEY,
@@ -184,7 +184,7 @@ export async function handler(event, context) {
 
         // Mark alerts as sent
         const alertIds = alerts.map(a => a.id);
-        await fetch(`${SUPABASE_URL}/rest/v1/notable_alerts?id=in.(${alertIds.join(',')})`, {
+        await fetch(`${SUPBASE_URL}/rest/v1/notable_alerts?id=in.(${alertIds.join(',')})`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

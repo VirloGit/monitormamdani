@@ -10,10 +10,10 @@ export async function handler(event, context) {
         };
     }
 
-    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPBASE_URL = process.env.SUPBASE_URL;
     const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-    if (!SUPABASE_URL || !SUPABASE_KEY) {
+    if (!SUPBASE_URL || !SUPABASE_KEY) {
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Supabase credentials not configured' })
@@ -42,7 +42,7 @@ export async function handler(event, context) {
         }));
 
         // Save to Supabase
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/market_history`, {
+        const response = await fetch(`${SUPBASE_URL}/rest/v1/market_history`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

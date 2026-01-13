@@ -90,7 +90,7 @@ export async function handler(event, context) {
         const weekRange = `${lastMonday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${lastFriday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
         const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-        const subject = `📊 Informed on Zohran - Week of ${weekRange}`;
+        const subject = `📊 MonitorMamdani.com - Week of ${weekRange}`;
 
         // Add alerts by category
         const categories = [
@@ -129,7 +129,7 @@ export async function handler(event, context) {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
         <h1 style="color: #1a1a1a; font-size: 24px; margin: 0 0 8px 0;">
-            📊 Informed on Zohran - MonitorMamdani.com
+            📊 Informed on Zohran
         </h1>
         <p style="color: #666; margin: 0; font-size: 14px;">
             <strong>${today}</strong>

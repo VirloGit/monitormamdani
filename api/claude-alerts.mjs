@@ -11,6 +11,8 @@ export async function handler(event, context) {
     }
 
     const CLAUDE_API_KEY = process.env.CLAUDE_API;
+    const SUPBASE_URL = process.env.SUPBASE_URL;
+    const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
     if (!CLAUDE_API_KEY) {
         return {
@@ -116,6 +118,15 @@ Only respond with valid JSON, no markdown or extra text.`;
             }
         }
 
+        // Enrich alerts with source URLs from news/videos
+        const enrichedAlerts = enrichAlertsWithUrls(alerts, news, videos);
+
+        // Save alerts to Supabase (non-blocking - don't wait for response)
+        if (SUPBASE_URL && SUPABASE_KEY && enrichedAlerts.length > 0) {
+            saveAlertsToSupabase(enrichedAlerts, SUPBASE_URL, SUPABASE_KEY)
+                .catch(err => console.error('Failed to save alerts to Supabase:', err));
+        }
+
         return {
             statusCode: 200,
             headers: {
@@ -123,7 +134,7 @@ Only respond with valid JSON, no markdown or extra text.`;
                 'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
             },
             body: JSON.stringify({
-                alerts,
+                alerts: enrichedAlerts,
                 generatedAt: new Date().toISOString()
             })
         };
@@ -135,4 +146,73 @@ Only respond with valid JSON, no markdown or extra text.`;
             body: JSON.stringify({ error: 'Failed to generate alerts', message: error.message })
         };
     }
+}
+
+// Enrich alerts with URLs from news/videos that likely inspired them
+function enrichAlertsWithUrls(alerts, news, videos) {
+    return alerts.map(alert => {
+        // Try to find a matching news article or video based on title keywords
+        const titleWords = (alert.title || '').toLowerCase().split(/\s+/).filter(w => w.length > 3);
+
+        // Check news first
+        const matchingNews = (news || []).find(item => {
+            const itemTitle = (item.title || '').toLowerCase();
+            return titleWords.some(word => itemTitle.includes(word));
+        });
+
+        if (matchingNews && matchingNews.url) {
+            return {
+                ...alert,
+                url: matchingNews.url,
+                source: matchingNews.source || 'News'
+            };
+        }
+
+        // Check videos second
+        const matchingVideo = (videos || []).find(item => {
+            const itemTitle = (item.title || '').toLowerCase();
+            return titleWords.some(word => itemTitle.includes(word));
+        });
+
+        if (matchingVideo && matchingVideo.url) {
+            return {
+                ...alert,
+                url: matchingVideo.url,
+                source: matchingVideo.source || 'Video'
+            };
+        }
+
+        // No match found - still return alert without URL
+        return alert;
+    });
+}
+
+// Save alerts to Supabase notable_alerts table
+async function saveAlertsToSupabase(alerts, supabaseUrl, supabaseKey) {
+    const alertsToSave = alerts.map(alert => ({
+        type: alert.type,
+        title: alert.title,
+        description: alert.description,
+        url: alert.url || null,
+        source: alert.source || null,
+        sent_in_digest: false
+    }));
+
+    const response = await fetch(`${supabaseUrl}/rest/v1/notable_alerts`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(alertsToSave)
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Supabase error: ${response.status} - ${errorText}`);
+    }
+
+    return true;
 }

@@ -111,7 +111,13 @@ export async function handler(event, context) {
                 groupedAlerts[key].forEach(alert => {
                     sectionsHTML += `
                     <li style="margin-bottom: 8px;">
-                        <strong>${alert.title}</strong>: ${alert.description}
+                        <strong>${alert.title}</strong>: ${alert.description}`;
+                    // Add article link if URL exists
+                    if (alert.url) {
+                        sectionsHTML += `
+                        <br><a href="${alert.url}" style="color: #0066cc; text-decoration: none; font-size: 13px;">→ Read more</a>`;
+                    }
+                    sectionsHTML += `
                     </li>`;
                 });
                 sectionsHTML += `

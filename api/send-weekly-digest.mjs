@@ -129,7 +129,7 @@ export async function handler(event, context) {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
         <h1 style="color: #1a1a1a; font-size: 24px; margin: 0 0 8px 0;">
-            📊 Informed on Zohran
+            📊 Informed on Zohran - MonitorMamdani.com
         </h1>
         <p style="color: #666; margin: 0; font-size: 14px;">
             <strong>${today}</strong>
@@ -145,10 +145,10 @@ export async function handler(event, context) {
 
     ${sectionsHTML}
 
-    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef;">
-        <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
-            Stay informed on all things Mamdani at <a href="https://monitormamdani.com" style="color: #0066cc; text-decoration: none;">monitormamdani.com</a>
-        </p>
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef; text-align: center;">
+        <a href="https://monitormamdani.com" style="display: inline-block; background: #0066cc; color: white !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-bottom: 16px;">
+            Monitor Now →
+        </a>
         <p style="font-size: 12px; color: #999; margin: 0;">
             You're receiving this weekly digest because you subscribed to "Informed on Zohran" on Monitor Mamdani.
         </p>

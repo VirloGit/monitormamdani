@@ -134,7 +134,7 @@ export async function handler(event, context) {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
         <h1 style="color: #1a1a1a; font-size: 20px; margin: 0 0 8px 0;">
-            🚨 Breaking Market Alert
+            🚨 Breaking from MonitorMamdani.com
         </h1>
         <p style="color: #666; margin: 0; font-size: 13px;">
             ${timestamp}
@@ -163,7 +163,7 @@ export async function handler(event, context) {
             </ul>
         </div>
 
-        <a href="${alert.url}" style="display: inline-block; background: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+        <a href="${alert.url}" style="display: inline-block; background: #0066cc; color: white !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
             View Market →
         </a>
     </div>

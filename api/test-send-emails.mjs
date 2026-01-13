@@ -28,7 +28,7 @@ export async function handler(event, context) {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
         <h1 style="color: #1a1a1a; font-size: 24px; margin: 0 0 8px 0;">
-            📊 Informed on Zohran
+            📊 Informed on Zohran - MonitorMamdani.com
         </h1>
         <p style="color: #666; margin: 0; font-size: 14px;">
             <strong>${today}</strong>
@@ -48,9 +48,11 @@ export async function handler(event, context) {
     <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
         <li style="margin-bottom: 8px;">
             <strong>Mamdani's Rent Freeze Market Shows Momentum</strong>: Prediction market odds for rent freeze initiative moved from 42% to 51% this week.
+            <br><a href="https://www.politico.com/news/2026/01/10/nyc-rent-freeze" style="color: #0066cc; text-decoration: none; font-size: 13px;">→ Read more</a>
         </li>
         <li style="margin-bottom: 8px;">
             <strong>Universal Childcare Gaining Traction</strong>: Public support for universal childcare proposal increased significantly based on recent polling data.
+            <br><a href="https://www.nytimes.com/2026/01/09/nyregion/childcare-proposal.html" style="color: #0066cc; text-decoration: none; font-size: 13px;">→ Read more</a>
         </li>
     </ul>
 
@@ -60,6 +62,7 @@ export async function handler(event, context) {
     <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
         <li style="margin-bottom: 8px;">
             <strong>NYC Budget Proposal Window Opening</strong>: Key period for advocating policy priorities begins next week.
+            <br><a href="https://www.thecity.nyc/2026/01/08/budget-priorities.html" style="color: #0066cc; text-decoration: none; font-size: 13px;">→ Read more</a>
         </li>
     </ul>
 
@@ -69,13 +72,14 @@ export async function handler(event, context) {
     <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
         <li style="margin-bottom: 8px;">
             <strong>Opposition Campaign Launched</strong>: Business coalition announced campaign against proposed tax increases.
+            <br><a href="https://www.wsj.com/articles/nyc-business-coalition-tax-opposition" style="color: #0066cc; text-decoration: none; font-size: 13px;">→ Read more</a>
         </li>
     </ul>
 
-    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef;">
-        <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
-            Stay informed on all things Mamdani at <a href="https://monitormamdani.com" style="color: #0066cc; text-decoration: none;">monitormamdani.com</a>
-        </p>
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef; text-align: center;">
+        <a href="https://monitormamdani.com" style="display: inline-block; background: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; margin-bottom: 16px;">
+            Monitor Now →
+        </a>
         <p style="font-size: 12px; color: #999; margin: 0;">
             You're receiving this weekly digest because you subscribed to "Informed on Zohran" on Monitor Mamdani.
         </p>
@@ -125,7 +129,7 @@ export async function handler(event, context) {
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
     <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
         <h1 style="color: #1a1a1a; font-size: 20px; margin: 0 0 8px 0;">
-            🚨 Breaking Market Alert
+            🚨 Breaking from MonitorMamdani.com
         </h1>
         <p style="color: #666; margin: 0; font-size: 13px;">
             ${timestamp}
@@ -154,7 +158,7 @@ export async function handler(event, context) {
             </ul>
         </div>
 
-        <a href="https://kalshi.com/markets/KXNYCRENTFREEZE-27JAN01" style="display: inline-block; background: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+        <a href="https://kalshi.com/markets/KXNYCRENTFREEZE-27JAN01" style="display: inline-block; background: #0066cc; color: white !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
             View Market →
         </a>
     </div>

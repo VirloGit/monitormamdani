@@ -1,0 +1,43 @@
+name: Market Monitor & Breaking Alerts
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  monitor-markets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Polymarket data
+        id: polymarket
+        run: |
+          curl -X GET "https://monitormamdani.com/api/polymarket" \
+            -H "Accept: application/json" \
+            -o polymarket.json
+
+      - name: Fetch Kalshi data
+        id: kalshi
+        run: |
+          curl -X GET "https://monitormamdani.com/api/kalshi" \
+            -H "Accept: application/json" \
+            -o kalshi.json
+
+      - name: Combine market data
+        id: combine
+        run: |
+          # Combine both market sources
+          jq -s '{"markets": (.[0].markets + .[1].markets)}' polymarket.json kalshi.json > combined_markets.json
+
+      - name: Save market snapshots to Supabase
+        run: |
+          curl -X POST "https://monitormamdani.com/api/save-market-snapshot" \
+            -H "Content-Type: application/json" \
+            -d @combined_markets.json
+
+      - name: Check for breaking alerts
+        run: |
+          curl -X POST "https://monitormamdani.com/api/check-breaking-alerts" \
+            -H "Content-Type: application/json" \
+            -d @combined_markets.json

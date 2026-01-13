@@ -110,20 +110,71 @@ export async function handler(event, context) {
 
             for (const alert of breakingAlerts) {
                 // Format email content
-                const subject = `🚨 Breaking: ${alert.title} ${alert.direction === 'up' ? '📈' : '📉'} ${alert.changePercent}%`;
+                const timestamp = new Date().toLocaleString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                });
+                const directionIcon = alert.direction === 'up' ? '📈' : '📉';
+                const directionColor = alert.direction === 'up' ? '#22c55e' : '#ef4444';
+
+                const subject = `🚨 Breaking: ${alert.title} ${directionIcon} ${alert.changePercent}%`;
+
                 const body = `
-**Market Alert**
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+        <h1 style="color: #1a1a1a; font-size: 20px; margin: 0 0 8px 0;">
+            🚨 Breaking Market Alert
+        </h1>
+        <p style="color: #666; margin: 0; font-size: 13px;">
+            ${timestamp}
+        </p>
+    </div>
 
-${alert.title} has moved **${alert.changePercent}%** ${alert.direction} in the last hour.
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h2 style="color: #1a1a1a; font-size: 18px; margin: 0 0 16px 0;">
+            ${alert.title}
+        </h2>
 
-- Previous: ${(alert.oldPrice * 100).toFixed(1)}%
-- Current: ${(alert.currentPrice * 100).toFixed(1)}%
+        <div style="background: white; padding: 16px; border-radius: 6px; margin-bottom: 16px;">
+            <p style="font-size: 16px; margin: 0 0 12px 0; color: #1a1a1a;">
+                This market has moved <strong style="color: ${directionColor};">${directionIcon} ${alert.changePercent}% ${alert.direction}</strong> in the last hour.
+            </p>
 
-[View Market](${alert.url})
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">
+                    <span style="color: #666; font-size: 14px;">Previous:</span>
+                    <strong style="float: right; font-size: 16px;">${(alert.oldPrice * 100).toFixed(1)}%</strong>
+                </li>
+                <li style="padding: 8px 0;">
+                    <span style="color: #666; font-size: 14px;">Current:</span>
+                    <strong style="float: right; font-size: 16px; color: ${directionColor};">${(alert.currentPrice * 100).toFixed(1)}%</strong>
+                </li>
+            </ul>
+        </div>
 
----
-You're receiving this because you subscribed to Breaking Alerts on Monitor Mamdani.
-                `.trim();
+        <a href="${alert.url}" style="display: inline-block; background: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+            View Market →
+        </a>
+    </div>
+
+    <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e9ecef;">
+        <p style="font-size: 12px; color: #999; margin: 0;">
+            You're receiving this because you subscribed to Breaking Alerts on <a href="https://monitormamdani.com" style="color: #0066cc; text-decoration: none;">Monitor Mamdani</a>.
+        </p>
+    </div>
+</body>
+</html>`.trim();
 
                 // Send via Buttondown API to breaking_alerts tag
                 const emailResponse = await fetch('https://api.buttondown.email/v1/emails', {

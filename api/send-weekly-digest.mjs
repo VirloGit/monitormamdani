@@ -88,11 +88,9 @@ export async function handler(event, context) {
 
         // Format digest email
         const weekRange = `${lastMonday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${lastFriday.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
         const subject = `📊 Informed on Zohran - Week of ${weekRange}`;
-
-        let bodyText = `# Informed on Zohran\n**Weekly Digest: ${weekRange}**\n\n`;
-        bodyText += `Here's your bullet-point summary of Notable Alerts from the past week:\n\n`;
 
         // Add alerts by category
         const categories = [
@@ -102,19 +100,61 @@ export async function handler(event, context) {
             { key: 'MOMENTUM', icon: '🚀', label: 'Momentum' }
         ];
 
+        let sectionsHTML = '';
         categories.forEach(({ key, icon, label }) => {
             if (groupedAlerts[key].length > 0) {
-                bodyText += `## ${icon} ${label}\n\n`;
+                sectionsHTML += `
+                <h2 style="color: #1a1a1a; font-size: 18px; margin-top: 24px; margin-bottom: 12px;">
+                    ${icon} ${label}
+                </h2>
+                <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">`;
                 groupedAlerts[key].forEach(alert => {
-                    bodyText += `- **${alert.title}**: ${alert.description}\n`;
+                    sectionsHTML += `
+                    <li style="margin-bottom: 8px;">
+                        <strong>${alert.title}</strong>: ${alert.description}
+                    </li>`;
                 });
-                bodyText += `\n`;
+                sectionsHTML += `
+                </ul>`;
             }
         });
 
-        bodyText += `---\n\n`;
-        bodyText += `Stay informed on all things Mamdani at [monitormamdani.com](https://monitormamdani.com)\n\n`;
-        bodyText += `You're receiving this weekly digest because you subscribed to "Informed on Zohran" on Monitor Mamdani.`;
+        const bodyHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+        <h1 style="color: #1a1a1a; font-size: 24px; margin: 0 0 8px 0;">
+            📊 Informed on Zohran
+        </h1>
+        <p style="color: #666; margin: 0; font-size: 14px;">
+            <strong>${today}</strong>
+        </p>
+        <p style="color: #666; margin: 8px 0 0 0; font-size: 14px;">
+            Weekly Digest: ${weekRange}
+        </p>
+    </div>
+
+    <p style="font-size: 16px; margin-bottom: 24px;">
+        Here's your bullet-point summary of <strong>Notable Alerts</strong> from the past week:
+    </p>
+
+    ${sectionsHTML}
+
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef;">
+        <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
+            Stay informed on all things Mamdani at <a href="https://monitormamdani.com" style="color: #0066cc; text-decoration: none;">monitormamdani.com</a>
+        </p>
+        <p style="font-size: 12px; color: #999; margin: 0;">
+            You're receiving this weekly digest because you subscribed to "Informed on Zohran" on Monitor Mamdani.
+        </p>
+    </div>
+</body>
+</html>`.trim();
 
         // Send via Buttondown to weekly_digest tag
         const emailResponse = await fetch('https://api.buttondown.email/v1/emails', {
@@ -125,7 +165,7 @@ export async function handler(event, context) {
             },
             body: JSON.stringify({
                 subject,
-                body: bodyText,
+                body: bodyHTML,
                 email_type: 'public',
                 tags: ['weekly_digest']
             })

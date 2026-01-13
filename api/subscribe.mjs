@@ -29,20 +29,32 @@ export async function handler(event, context) {
             };
         }
 
+        console.log('Subscribing email:', email, 'with tags:', tags);
+
         // Subscribe via Buttondown API
+        // Note: Buttondown API expects tags as comma-separated string, not array
+        const requestBody = {
+            email: email
+        };
+
+        // Only add tags if they exist
+        if (tags && tags.length > 0) {
+            requestBody.tags = tags.join(',');
+        }
+
+        console.log('Buttondown API request:', requestBody);
+
         const response = await fetch('https://api.buttondown.email/v1/subscribers', {
             method: 'POST',
             headers: {
                 'Authorization': `Token ${BUTTONDOWN_API_KEY}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                email: email,
-                tags: tags || []
-            })
+            body: JSON.stringify(requestBody)
         });
 
         const data = await response.json();
+        console.log('Buttondown API response:', response.status, data);
 
         if (response.ok || response.status === 201) {
             return {

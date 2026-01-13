@@ -1510,6 +1510,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await response.json();
 
+                console.log('Subscription response:', response.status, data);
+
                 if (data.success) {
                     notifyForm.classList.add('hidden');
                     if (success) {
@@ -1531,10 +1533,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }, 2500);
                 } else {
-                    throw new Error(data.error || 'Subscription failed');
+                    const errorMsg = data.error || data.message || JSON.stringify(data);
+                    throw new Error(errorMsg);
                 }
             } catch (error) {
-                alert('Failed to subscribe: ' + error.message);
+                console.error('Subscription error:', error);
+                let errorMessage = 'An unexpected error occurred';
+                if (error.message) {
+                    errorMessage = error.message;
+                } else if (typeof error === 'object') {
+                    errorMessage = JSON.stringify(error);
+                }
+                alert('Failed to subscribe: ' + errorMessage);
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Subscribe';

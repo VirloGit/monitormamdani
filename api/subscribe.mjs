@@ -32,15 +32,11 @@ export async function handler(event, context) {
         console.log('Subscribing email:', email, 'with tags:', tags);
 
         // Subscribe via Buttondown API
-        // Note: Buttondown API expects tags as comma-separated string, not array
+        // Note: Buttondown API expects 'email_address' not 'email' and tags as array
         const requestBody = {
-            email: email
+            email_address: email,
+            tags: tags || []
         };
-
-        // Only add tags if they exist
-        if (tags && tags.length > 0) {
-            requestBody.tags = tags.join(',');
-        }
 
         console.log('Buttondown API request:', requestBody);
 

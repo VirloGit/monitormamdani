@@ -39,6 +39,18 @@
 
     <!-- Umami Analytics -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="3c9accf0-a99c-491d-aa47-e7952b559680"></script>
+    <script>
+        // Umami tracker diagnostic
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (typeof umami !== 'undefined') {
+                    console.log('✓ Umami analytics loaded successfully');
+                } else {
+                    console.warn('⚠ Umami analytics blocked or failed to load (likely ad blocker)');
+                }
+            }, 2000);
+        });
+    </script>
 </head>
 <body>
     <!-- Top ticker bar -->

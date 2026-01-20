@@ -383,6 +383,12 @@ function updateStatus(text, type) {
 async function generateAlerts() {
     if (!alertsContainer) return;
 
+    // Try to load cached alerts from localStorage immediately
+    const cachedAlerts = loadCachedAlerts();
+    if (cachedAlerts) {
+        renderAlerts(cachedAlerts.alerts || []);
+    }
+
     try {
         const response = await fetch('/api/claude-alerts', {
             method: 'POST',
@@ -399,14 +405,63 @@ async function generateAlerts() {
         }
 
         const data = await response.json();
+
+        // Save to localStorage for instant loading next time
+        saveCachedAlerts(data);
+
         renderAlerts(data.alerts || []);
 
     } catch (error) {
-        alertsContainer.innerHTML = `
-            <div class="feed-empty">
-                <p>ALERTS UNAVAILABLE</p>
-            </div>
-        `;
+        // Only show error if we don't have cached data
+        if (!cachedAlerts) {
+            alertsContainer.innerHTML = `
+                <div class="feed-empty">
+                    <p>ALERTS UNAVAILABLE</p>
+                </div>
+            `;
+        }
+    }
+}
+
+// Load cached alerts from localStorage
+function loadCachedAlerts() {
+    try {
+        const cached = localStorage.getItem('monitormamdani_alerts');
+        if (!cached) return null;
+
+        const data = JSON.parse(cached);
+        const cacheDate = new Date(data.cachedAt);
+        const now = new Date();
+
+        // Check if cache is from today
+        const todayDate = now.toISOString().split('T')[0];
+        const cacheDay = cacheDate.toISOString().split('T')[0];
+
+        if (todayDate === cacheDay) {
+            console.log('[CLIENT CACHE HIT] Loading alerts from localStorage');
+            return data;
+        } else {
+            console.log('[CLIENT CACHE EXPIRED] Cache is from', cacheDay);
+            localStorage.removeItem('monitormamdani_alerts');
+            return null;
+        }
+    } catch (e) {
+        console.error('Error loading cached alerts:', e);
+        return null;
+    }
+}
+
+// Save alerts to localStorage
+function saveCachedAlerts(data) {
+    try {
+        const cacheData = {
+            ...data,
+            cachedAt: new Date().toISOString()
+        };
+        localStorage.setItem('monitormamdani_alerts', JSON.stringify(cacheData));
+        console.log('[CLIENT CACHE SAVED] Alerts cached for instant loading');
+    } catch (e) {
+        console.error('Error saving cached alerts:', e);
     }
 }
 

@@ -904,6 +904,7 @@ body::after{
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(4px);
+  z-index: 1001;
 }
 
 .velocity-modal-content{
@@ -916,6 +917,7 @@ body::after{
   box-shadow: 0 0 40px rgba(255, 176, 0, 0.2);
   display: flex;
   flex-direction: column;
+  z-index: 1002;
 }
 
 .velocity-modal-header{
@@ -1405,6 +1407,7 @@ body::after{
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(4px);
+  z-index: 1001;
 }
 
 .notify-modal-content{
@@ -1414,6 +1417,7 @@ body::after{
   background: var(--panel);
   border: 1px solid var(--amber);
   box-shadow: 0 0 40px rgba(255, 176, 0, 0.2);
+  z-index: 1002;
 }
 
 .notify-modal-header{
@@ -2029,6 +2033,8 @@ body::after{
 .sharethis-inline-share-buttons{
   display: flex !important;
   align-items: center;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .sharethis-inline-share-buttons .st-btn{
@@ -2037,6 +2043,13 @@ body::after{
   min-width: 32px !important;
   border-radius: 0 !important;
   margin: 0 2px !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Ensure ShareThis network list stays behind modals */
+#st-1, .st-sticky-share-buttons{
+  z-index: 1 !important;
 }
 
 /* Contact Modal */
@@ -2058,6 +2071,7 @@ body::after{
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(4px);
+  z-index: 1001;
 }
 
 .contact-modal-content{
@@ -2067,6 +2081,7 @@ body::after{
   background: var(--panel);
   border: 1px solid var(--amber);
   box-shadow: 0 0 40px rgba(255, 176, 0, 0.2);
+  z-index: 1002;
 }
 
 .contact-modal-header{
@@ -2809,6 +2824,7 @@ body::after{
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(4px);
+  z-index: 1001;
 }
 
 .changelog-modal-content{
@@ -2820,6 +2836,7 @@ body::after{
   border: 1px solid var(--line);
   display: flex;
   flex-direction: column;
+  z-index: 1002;
 }
 
 .changelog-modal-header{

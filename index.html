@@ -3,67 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONITOR MAMDANI - LIVE TERMINAL</title>
-    <link rel="stylesheet" href="styles.css?v=3">
+    <title>Monitor Mamdani | Live NYC Mayor Tracking Dashboard</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Real-time monitoring dashboard for NYC Mayor Zohran Mamdani. Track campaign promises, prediction market odds from Polymarket and Kalshi, news coverage, and viral video content.">
+    <meta name="keywords" content="Zohran Mamdani, NYC Mayor, New York City, prediction markets, Polymarket, Kalshi, campaign promises, political tracking">
+    <meta name="author" content="Virlo Team">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://monitormamdani.com">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://monitormamdani.com">
+    <meta property="og:title" content="Monitor Mamdani | Live NYC Mayor Tracking Dashboard">
+    <meta property="og:description" content="Real-time monitoring dashboard for NYC Mayor Zohran Mamdani. Track campaign promises, prediction market odds, news, and viral content.">
+    <meta property="og:image" content="https://monitormamdani.com/assets/Mamdani-min.jpg">
+    <meta property="og:site_name" content="Monitor Mamdani">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://monitormamdani.com">
+    <meta name="twitter:title" content="Monitor Mamdani | Live NYC Mayor Tracking Dashboard">
+    <meta name="twitter:description" content="Real-time monitoring dashboard for NYC Mayor Zohran Mamdani. Track campaign promises, prediction market odds, news, and viral content.">
+    <meta name="twitter:image" content="https://monitormamdani.com/assets/Mamdani-min.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="assets/Mamdani-min.jpg">
+    <link rel="apple-touch-icon" href="assets/Mamdani-min.jpg">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- ShareThis -->
+    <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=695fb41dae31a7649e7db441&product=inline-share-buttons' async='async'></script>
+
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="3c9accf0-a99c-491d-aa47-e7952b559680"></script>
+    <script>
+        // Umami tracker diagnostic
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (typeof umami !== 'undefined') {
+                    console.log('✓ Umami analytics loaded successfully');
+                } else {
+                    console.warn('⚠ Umami analytics blocked or failed to load (likely ad blocker)');
+                }
+            }, 2000);
+        });
+    </script>
 </head>
 <body>
-    <!-- Stock Ticker Marquee -->
-    <div class="ticker-container">
+    <!-- Top ticker bar -->
+    <div class="ticker-bar">
         <div class="ticker">
-            <span>MONITOR MAMDANI</span>
-            <span>MONITOR MAMDANI</span>
-            <span>MONITOR MAMDANI</span>
-            <span>MONITOR MAMDANI</span>
-            <span>MONITOR MAMDANI</span>
-            <span>MONITOR MAMDANI</span>
+            <div class="track" id="tickerTrack">
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+                <span>MONITOR MAMDANI</span>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-        <!-- Keep Me Informed Section - Moved to Top -->
-        <div class="keep-informed-section">
-            <div class="keep-informed-box">
-                <h2 class="keep-informed-title">KEEP ME INFORMED</h2>
-                <p class="keep-informed-text">Get real-time alerts on trending topics</p>
-                <form class="keep-informed-form" id="keepInformedForm">
-                    <input type="email" id="emailInput" placeholder="Enter your email" class="email-input" required>
-                    <button type="submit" class="submit-button">SUBSCRIBE</button>
-                </form>
-                <p class="privacy-note">We respect your privacy. Unsubscribe anytime.</p>
-            </div>
-        </div>
+    <!-- Main layout with sidebar -->
+    <div class="page-layout">
+        <!-- Main content area -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Hero section -->
+                <div class="hero">
+                    <div class="hero-top">
+                        <div class="hero-title">
+                            <img src="assets/Mamdani-min.jpg" alt="Monitor Mamdani" class="hero-logo">
+                            <div>
+                                <h1 class="h1">Monitor Mamdani</h1>
+                                <p class="subline">Monitoring Zohran Mamdani</p>
+                                <p class="subline built-by">Built by <a href="https://virlo.ai" target="_blank">Virlo Team</a></p>
+                                <div class="hero-actions">
+                                    <button class="hero-btn" onclick="openContactModal()">Contact</button>
+                                    <button class="hero-btn changelog-btn" onclick="openChangelogModal()">Changelog</button>
+                                    <!-- ShareThis BEGIN --><div class="sharethis-inline-share-buttons"></div><!-- ShareThis END -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Stats Boxes Container -->
+                        <div class="hero-stats-row">
+                            <!-- Term Countdown -->
+                            <div class="term-countdown" id="termCountdown">
+                                <div class="countdown-label">TIME REMAINING IN TERM</div>
+                                <div class="countdown-timer" id="countdownTimer">
+                                    <span class="countdown-unit"><span id="countdownYears">0</span><small>Y</small></span>
+                                    <span class="countdown-unit"><span id="countdownDays">0</span><small>D</small></span>
+                                    <span class="countdown-unit"><span id="countdownHours">00</span><small>H</small></span>
+                                    <span class="countdown-unit"><span id="countdownMinutes">00</span><small>M</small></span>
+                                    <span class="countdown-unit"><span id="countdownSeconds">00</span><small>S</small></span>
+                                </div>
+                                <div class="countdown-dates">Jan 1, 2026 - Jan 1, 2030</div>
+                            </div>
 
-        <!-- Top CTA -->
-        <div class="cta-banner">
-            <a href="https://virlo.ai" target="_blank" class="cta-link">Data by Virlo.ai</a>
-        </div>
+                            <!-- Promises Completed Tracker -->
+                            <div class="promises-tracker" id="promisesTracker">
+                                <div class="tracker-label">CAMPAIGN PROMISES COMPLETED</div>
+                                <div class="tracker-count">
+                                    <span class="tracker-completed" id="promisesCompleted">0</span>
+                                    <span class="tracker-separator">/</span>
+                                    <span class="tracker-total" id="promisesTotal">0</span>
+                                </div>
+                                <div class="tracker-progress">
+                                    <div class="tracker-progress-bar" id="promisesProgressBar" style="width: 0%"></div>
+                                </div>
+                                <div class="tracker-status" id="promisesStatus">Analyzing...</div>
+                            </div>
 
-        <!-- Hero Image Section -->
-        <div class="hero-section">
-            <img src="assets/images.png" alt="Monitor Mamdani" class="hero-image">
-        </div>
+                            <!-- Keep Me Informed Box -->
+                            <div class="notify-box" id="notifyBox" onclick="openNotifyModal()">
+                                <div class="notify-bell">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                                    </svg>
+                                </div>
+                                <div class="notify-label">KEEP ME INFORMED</div>
+                            </div>
+                        </div>
+                        <div class="status">
+                            <span class="live-dot"></span>
+                            <span id="statusText">CONNECTING...</span>
+                            <span class="data-update-info">Data updated every hour by Virlo team</span>
+                        </div>
+                    </div>
 
-        <!-- Live Feed Panel -->
-        <div class="terminal-panel">
-            <div class="panel-header">
-                <span class="live-indicator">
-                    <span class="blink">●</span> LIVE
-                </span>
-                <span class="panel-title">VIRLO.AI TREND FEED</span>
-                <span class="status-text" id="statusText">CONNECTING...</span>
-            </div>
+                    <!-- Top CTA -->
+                    <div class="data-sources">
+                        <span>Data from:</span>
+                        <a href="https://virlo.ai" target="_blank">Virlo</a>
+                        <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>
+                        <a href="https://polymarket.com" target="_blank">Polymarket</a>
+                        <a href="https://kalshi.com" target="_blank">Kalshi</a>
+                        <a href="https://data.cityofnewyork.us" target="_blank" rel="dofollow">NYC Open Data</a>
+                    </div>
+                </div>
 
-            <div class="feed-container" id="feedContainer">
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <p>INITIALIZING FEED...</p>
+                <!-- Section Navigation Bar -->
+                <nav class="section-nav" id="sectionNav">
+                    <a href="#promisesPanel" class="nav-link">Platform</a>
+                    <a href="#alertsPanel" class="nav-link">Alerts</a>
+                    <a href="#videosPanel" class="nav-link">Videos</a>
+                    <a href="#newsPanel" class="nav-link">News</a>
+                    <a href="#nyc311Panel" class="nav-link">311 Requests</a>
+                    <a href="#nycLegislationPanel" class="nav-link">Legislation</a>
+                    <a href="#nycBudgetPanel" class="nav-link">Budget</a>
+                    <a href="#nycMMRPanel" class="nav-link">MMR</a>
+                    <a href="#marketsSidebar" class="nav-link">Markets</a>
+                </nav>
+
+                <!-- Campaign Promises Panel -->
+                <div class="panel promises-panel" id="promisesPanel">
+                    <div class="panel-title">
+                        <h2>Campaign Platform</h2>
+                        <span class="meta"><a href="https://www.zohranfornyc.com/platform" target="_blank">zohranfornyc.com/platform</a></span>
+                    </div>
+
+                    <div class="promises-grid" id="promisesContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING PLATFORM...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notable Alerts Panel -->
+                <div class="panel alerts-panel" id="alertsPanel">
+                    <div class="panel-title">
+                        <h2>Notable Alerts</h2>
+                        <span class="meta">Live Monitoring Across Campaign Promises, Short-Form Content, and General News & Prediction Markets to Identify Trend Movement</span>
+                    </div>
+
+                    <div class="alerts-container" id="alertsContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>ANALYZING CONNECTIONS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Videos Panel -->
+                <div class="panel" id="videosPanel">
+                    <div class="panel-title">
+                        <h2>Mamdani Videos</h2>
+                        <span class="meta">Virlo Comet | Auto-refresh: 24hr</span>
+                    </div>
+
+                    <div class="feed" id="videosContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING VIDEOS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Panel (Firecrawl) -->
+                <div class="panel" id="newsPanel">
+                    <div class="panel-title">
+                        <h2>Latest News</h2>
+                        <span class="meta">Firecrawl Search | Auto-refresh: 1hr</span>
+                    </div>
+
+                    <div class="feed" id="newsContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING NEWS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trends Panel (only shown if Mamdani-related trends exist) -->
+                <div class="panel" id="trendsPanel" style="display: none;">
+                    <div class="panel-title">
+                        <h2>Trending Topics</h2>
+                        <span class="meta">Virlo Trends Digest | Auto-refresh: 24hr</span>
+                    </div>
+
+                    <div class="feed" id="trendsContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING TRENDS...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NYC Open Data Section Header -->
+                <div class="section-divider">
+                    <h2 class="section-title">NYC Open Data</h2>
+                    <span class="section-source">data.cityofnewyork.us</span>
+                </div>
+
+                <!-- 311 Service Requests Panel -->
+                <div class="panel nyc-panel" id="nyc311Panel">
+                    <div class="panel-title">
+                        <h2>311 Service Requests</h2>
+                        <span class="meta">Last 7 Days | NYC Open Data</span>
+                    </div>
+
+                    <div class="nyc-311-container" id="nyc311Container">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING 311 DATA...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- City Council Legislation Panel -->
+                <div class="panel nyc-panel" id="nycLegislationPanel">
+                    <div class="panel-title">
+                        <h2>City Council Legislation</h2>
+                        <span class="meta">Bills & Local Laws | NYC Open Data</span>
+                    </div>
+
+                    <div class="nyc-legislation-container" id="nycLegislationContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING LEGISLATION...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NYC Expense Budget Panel -->
+                <div class="panel nyc-panel" id="nycBudgetPanel">
+                    <div class="panel-title">
+                        <h2>NYC Expense Budget</h2>
+                        <span class="meta">Agency Budgets | NYC Open Data</span>
+                    </div>
+
+                    <div class="nyc-budget-container" id="nycBudgetContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING BUDGET DATA...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mayor's Management Report Panel -->
+                <div class="panel nyc-panel" id="nycMMRPanel">
+                    <div class="panel-title">
+                        <h2>Mayor's Management Report</h2>
+                        <span class="meta">Agency Performance | NYC Open Data</span>
+                    </div>
+
+                    <div class="nyc-mmr-container" id="nycMMRContainer">
+                        <div class="loading-state">
+                            <div class="loading-spinner"></div>
+                            <p>LOADING MMR DATA...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer CTA -->
+                <div class="footer">
+                    <span class="smallprint">
+                        © 2026 Monitor Mamdani. Built with data from
+                        <a href="https://virlo.ai" target="_blank">Virlo</a>,
+                        <a href="https://firecrawl.dev" target="_blank">Firecrawl</a>,
+                        <a href="https://polymarket.com" target="_blank">Polymarket</a>,
+                        <a href="https://kalshi.com" target="_blank">Kalshi</a>, and
+                        <a href="https://data.cityofnewyork.us" target="_blank">NYC Open Data</a>
+                    </span>
                 </div>
             </div>
         </div>
 
-        <!-- Bottom CTA -->
-        <div class="cta-banner bottom">
-            <a href="https://virlo.ai" target="_blank" class="cta-link">Data by Virlo.ai</a>
+        <!-- Right Sidebar - Prediction Markets -->
+        <aside class="markets-sidebar" id="marketsSidebar">
+            <div class="sidebar-header">
+                <h2>Prediction Markets</h2>
+                <span class="sidebar-sources">Polymarket + Kalshi</span>
+            </div>
+            <div class="sidebar-markets" id="marketsContainer">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>LOADING...</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Velocity Modal -->
+    <div class="velocity-modal" id="velocityModal">
+        <div class="velocity-modal-backdrop" onclick="closeVelocityModal()"></div>
+        <div class="velocity-modal-content">
+            <div class="velocity-modal-header">
+                <h3 id="velocityModalTitle">Related Content</h3>
+                <button class="velocity-modal-close" onclick="closeVelocityModal()">&times;</button>
+            </div>
+            <div class="velocity-modal-body" id="velocityModalBody">
+                <!-- Content populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="contact-modal" id="contactModal">
+        <div class="contact-modal-backdrop" onclick="closeContactModal()"></div>
+        <div class="contact-modal-content">
+            <div class="contact-modal-header">
+                <h3>Contact Us</h3>
+                <button class="contact-modal-close" onclick="closeContactModal()">&times;</button>
+            </div>
+            <div class="contact-modal-body">
+                <form id="contactForm" action="https://formspree.io/f/mjgknlwn" method="POST">
+                    <div class="form-group">
+                        <label for="contactName">Name</label>
+                        <input type="text" id="contactName" name="name" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email</label>
+                        <input type="email" id="contactEmail" name="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" name="message" required placeholder="Your message..." rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="contact-submit-btn" id="contactSubmitBtn">Send Message</button>
+                </form>
+                <div class="contact-success" id="contactSuccess">
+                    <span class="contact-success-icon">✓</span>
+                    <p>Message sent successfully!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changelog Modal -->
+    <div class="changelog-modal" id="changelogModal">
+        <div class="changelog-modal-backdrop" onclick="closeChangelogModal()"></div>
+        <div class="changelog-modal-content">
+            <div class="changelog-modal-header">
+                <h3>Changelog</h3>
+                <button class="changelog-modal-close" onclick="closeChangelogModal()">&times;</button>
+            </div>
+            <div class="changelog-modal-body" id="changelogModalBody">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading changelog...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notify Modal -->
+    <div class="notify-modal" id="notifyModal">
+        <div class="notify-modal-backdrop" onclick="closeNotifyModal()"></div>
+        <div class="notify-modal-content">
+            <div class="notify-modal-header">
+                <div class="notify-modal-bell">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                    </svg>
+                </div>
+                <h3>Stay Informed</h3>
+                <button class="notify-modal-close" onclick="closeNotifyModal()">&times;</button>
+            </div>
+            <div class="notify-modal-body">
+                <p class="notify-description">Get notified on major markets and news regarding Zohran Mamdani for free instantly.</p>
+                <form id="notifyForm">
+                    <div class="form-group">
+                        <label for="notifyEmail">Email Address</label>
+                        <input type="email" id="notifyEmail" name="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="weekly_digest" id="weeklyNewsletter" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Subscribe to weekly "Informed on Zohran" digest</span>
+                        </label>
+                        <p class="checkbox-description">A bullet-point summary of Notable Alerts from the past week, delivered every Sunday.</p>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="breaking_alerts" id="breakingAlerts" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Breaking Alerts</span>
+                        </label>
+                        <p class="checkbox-description">Instant notifications for major movements in prediction markets regarding Zohran and major news alerts.</p>
+                    </div>
+                    <button type="submit" class="notify-submit-btn" id="notifySubmitBtn">Subscribe</button>
+                </form>
+                <div class="notify-success" id="notifySuccess">
+                    <span class="notify-success-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </span>
+                    <p>You're subscribed!</p>
+                    <span class="notify-success-sub">We'll keep you informed.</span>
+                </div>
+            </div>
         </div>
     </div>
 

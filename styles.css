@@ -1328,6 +1328,56 @@ body::after{
   25%{ transform: rotate(0deg); }
 }
 
+/* Keep Me Informed Box - Top Position */
+.notify-box-top{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 30px;
+  margin: 20px 0;
+  background: linear-gradient(135deg, rgba(255, 176, 0, 0.15) 0%, rgba(255, 176, 0, 0.05) 100%);
+  border: 3px solid var(--amber);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 176, 0, 0.2);
+  animation: glow-amber 3s ease-in-out infinite;
+}
+
+.notify-box-top:hover{
+  background: linear-gradient(135deg, rgba(255, 176, 0, 0.25) 0%, rgba(255, 176, 0, 0.15) 100%);
+  border-color: var(--amber);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 176, 0, 0.4);
+}
+
+.notify-box-top .notify-bell{
+  margin-right: 15px;
+  margin-bottom: 0;
+}
+
+.notify-box-top .notify-bell svg{
+  width: 48px;
+  height: 48px;
+}
+
+.notify-box-top .notify-label{
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--amber);
+  letter-spacing: 2px;
+}
+
+@keyframes glow-amber{
+  0%, 100%{
+    box-shadow: 0 4px 12px rgba(255, 176, 0, 0.2), 0 0 20px rgba(255, 176, 0, 0.1);
+  }
+  50%{
+    box-shadow: 0 6px 20px rgba(255, 176, 0, 0.4), 0 0 40px rgba(255, 176, 0, 0.2);
+  }
+}
+
 .notify-label{
   font-size: 10px;
   font-weight: 700;

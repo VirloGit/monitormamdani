@@ -1,6 +1,29 @@
 // Netlify Serverless Function for Claude AI-powered Notable Alerts
 // Endpoint: GET /api/claude-alerts
 // Analyzes videos, news, and markets to find connections and generate actionable insights
+// OPTIMIZED: Daily caching to reduce Claude API credits usage
+
+// In-memory cache for daily alert analysis
+let dailyAlertsCache = {
+    data: null,
+    timestamp: null,
+    cacheDate: null,
+    inputHash: null
+};
+
+const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+// Simple hash function for cache key
+function hashInput(videos, news, markets) {
+    const str = JSON.stringify({ videos, news, markets });
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString();
+}
 
 export async function handler(event, context) {
     if (event.httpMethod !== 'POST') {
@@ -24,6 +47,33 @@ export async function handler(event, context) {
     try {
         const body = JSON.parse(event.body || '{}');
         const { videos, news, markets } = body;
+
+        // Check if we have valid cached data from today
+        const now = new Date();
+        const todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+        const currentInputHash = hashInput(videos, news, markets);
+
+        const isCacheValid = dailyAlertsCache.data &&
+                            dailyAlertsCache.cacheDate === todayDate &&
+                            dailyAlertsCache.timestamp &&
+                            (now.getTime() - dailyAlertsCache.timestamp) < CACHE_DURATION_MS;
+
+        if (isCacheValid) {
+            console.log(`[CACHE HIT] Serving cached alerts from ${dailyAlertsCache.cacheDate}`);
+
+            return {
+                statusCode: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'public, max-age=86400, s-maxage=86400', // 24 hours
+                    'X-Cache-Status': 'HIT',
+                    'X-Cache-Date': dailyAlertsCache.cacheDate
+                },
+                body: JSON.stringify(dailyAlertsCache.data)
+            };
+        }
+
+        console.log('[CACHE MISS] Generating fresh alerts with Claude API');
 
         // Build context from all data sources
         const videoContext = (videos || []).slice(0, 5).map(v =>
@@ -127,20 +177,50 @@ Only respond with valid JSON, no markdown or extra text.`;
                 .catch(err => console.error('Failed to save alerts to Supabase:', err));
         }
 
+        const responseData = {
+            alerts: enrichedAlerts,
+            generatedAt: new Date().toISOString()
+        };
+
+        // Update the daily cache
+        dailyAlertsCache = {
+            data: responseData,
+            timestamp: now.getTime(),
+            cacheDate: todayDate,
+            inputHash: currentInputHash
+        };
+
+        console.log(`[CACHE UPDATED] New cache set for ${todayDate}`);
+
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
+                'Cache-Control': 'public, max-age=86400, s-maxage=86400', // 24 hours
+                'X-Cache-Status': 'MISS',
+                'X-Cache-Date': todayDate
             },
-            body: JSON.stringify({
-                alerts: enrichedAlerts,
-                generatedAt: new Date().toISOString()
-            })
+            body: JSON.stringify(responseData)
         };
 
     } catch (error) {
         console.error('Error generating alerts:', error);
+
+        // If we have stale cache data, return it instead of erroring
+        if (dailyAlertsCache.data) {
+            console.log('[ERROR RECOVERY] Serving stale cache data due to API error');
+            return {
+                statusCode: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'public, max-age=300',
+                    'X-Cache-Status': 'STALE',
+                    'X-Cache-Date': dailyAlertsCache.cacheDate
+                },
+                body: JSON.stringify(dailyAlertsCache.data)
+            };
+        }
+
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Failed to generate alerts', message: error.message })

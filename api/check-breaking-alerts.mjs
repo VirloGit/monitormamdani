@@ -1,8 +1,8 @@
 // Netlify Serverless Function to Check for Breaking Market Alerts
 // Endpoint: POST /api/check-breaking-alerts
-// Compares current market prices with 1-hour-ago prices and sends alerts for 10%+ changes
+// Compares current market prices with 1-hour-ago prices and sends alerts for significant changes
 
-const PRICE_CHANGE_THRESHOLD = 0.10; // 10% change
+const PRICE_CHANGE_THRESHOLD = 0.15; // 15% change (increased from 10% to reduce alert volume)
 const LOOKBACK_HOURS = 1;
 
 export async function handler(event, context) {
